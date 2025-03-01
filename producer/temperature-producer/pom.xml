@@ -4,14 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.example.osgi</groupId>
-    <artifactId>Herbifors</artifactId>
+    <parent>
+        <groupId>com.example.osgi</groupId>
+        <artifactId>Herbifors</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <groupId>com.example.osgi.producer.temperature</groupId>
+    <artifactId>temperature-producer</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <modules>
-        <module>producer/temperature-producer</module>
-        <module>consumer/temperature-consumer</module>
-    </modules>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -19,6 +21,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <!-- Add the OSGi Bundle Plugin -->
     <build>
         <plugins>
             <plugin>
@@ -28,15 +31,15 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>temperature-producer</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Import-Package>org.osgi.framework, *</Import-Package>
+                        <Export-Package>com.example.osgi.producer.temperature</Export-Package>
+                        <Import-Package>org.osgi.framework</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
 
     <dependencies>
         <!-- Apache Felix OSGi Core -->
@@ -44,13 +47,6 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.framework</artifactId>
             <version>7.0.5</version>
-        </dependency>
-
-        <!-- Apache Felix SCR (Declarative Services) -->
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr</artifactId>
-            <version>2.2.0</version>
         </dependency>
 
         <!-- OSGi Core API -->
@@ -61,6 +57,4 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
-
 </project>
