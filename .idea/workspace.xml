@@ -6,7 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="b3b19823-2cea-49af-b8d4-8ede279d0dde" name="Changes" comment="initial commit">
       <change afterPath="$PROJECT_DIR$/consumer/temperature-consumer/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/consumer/temperature-consumer/src/main/java/com/example/osgi/consumer/temperature/Activator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/consumer/temperature-consumer/src/main/java/com/example/osgi/consumer/temperature/TemperatureConsumerService.java" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/producer/temperature-producer/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/producer/temperature-producer/src/main/java/com/example/osgi/producer/temperature/Activator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/producer/temperature-producer/src/main/java/com/example/osgi/producer/temperature/TemperatureService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/producer/temperature-producer/src/main/java/com/example/osgi/producer/temperature/TemperatureServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
@@ -105,7 +110,7 @@
       <workItem from="1740781930472" duration="671000" />
       <workItem from="1740802039217" duration="880000" />
       <workItem from="1740803564688" duration="109000" />
-      <workItem from="1740804230772" duration="11124000" />
+      <workItem from="1740804230772" duration="11707000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -115,7 +120,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740781973103</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="initial commit">
+      <option name="closed" value="true" />
+      <created>1740850147520</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1740850147521</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

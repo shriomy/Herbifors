@@ -30,7 +30,7 @@
                 <configuration>
                     <instructions>
                         <!-- Bundle symbolic name and version -->
-                        <Bundle-SymbolicName>temperature-consumer</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
 
                         <!-- Import the temperature-producer package -->

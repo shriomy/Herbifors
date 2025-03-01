@@ -31,7 +31,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>temperature-producer</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Export-Package>com.example.osgi.producer.temperature</Export-Package>
                         <Import-Package>org.osgi.framework</Import-Package>
