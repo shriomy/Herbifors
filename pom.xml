@@ -11,6 +11,9 @@
     <modules>
         <module>producer/temperature-producer</module>
         <module>consumer/temperature-consumer</module>
+        <module>producer/harvest-tracker</module>
+        <module>consumer/warehouse-inventory</module>
+        <module>consumer/finance-manager</module>
     </modules>
 
     <properties>
