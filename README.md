@@ -1,5 +1,7 @@
 Please create your Consumers and Producers as new modules inside relevent directory(Consumer/Producer).
 
+Maintaining the file structure is highly important here.
+
 Here is the folder structure
 Herbifors/                         # Root project folder
 │
