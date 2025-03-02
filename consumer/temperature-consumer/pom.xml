@@ -3,16 +3,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <groupId>com.example.osgi.consumer.temperature</groupId>
+    <artifactId>temperature-consumer</artifactId>
+    <version>1.0</version>
+    <packaging>bundle</packaging>
 
     <parent>
         <groupId>com.example.osgi</groupId>
         <artifactId>Herbifors</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-
-    <groupId>com.example.osgi.consumer.temperature</groupId>
-    <artifactId>temperature-consumer</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -25,19 +26,17 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>6.0.0</version>
+                <version>${maven-bundle-plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <!-- Bundle symbolic name and version -->
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${project.version}</Bundle-Version>
-
                         <!-- Import the temperature-producer package -->
-                        <Import-Package>com.example.osgi.producer.temperature</Import-Package>
+                        <Import-Package>com.example.osgi.producer.temperature, org.osgi.framework</Import-Package>
+                        <Bundle-Activator>com.example.osgi.consumer.temperature.TemperatureConsumerService</Bundle-Activator>
+                        <Export-Package>com.example.osgi.consumer.temperature</Export-Package>
 
-                        <!-- Import other necessary OSGi packages -->
-                        <Import-Package>org.osgi.framework, *</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -53,11 +52,11 @@
         </dependency>
 
         <!-- Apache Felix SCR (Declarative Services) -->
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr</artifactId>
-            <version>2.2.0</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.felix</groupId>-->
+<!--            <artifactId>org.apache.felix.scr</artifactId>-->
+<!--            <version>2.2.0</version>-->
+<!--        </dependency>-->
 
         <!-- OSGi Core API -->
         <dependency>

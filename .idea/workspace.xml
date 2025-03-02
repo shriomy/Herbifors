@@ -5,18 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b3b19823-2cea-49af-b8d4-8ede279d0dde" name="Changes" comment="initial commit">
-      <change afterPath="$PROJECT_DIR$/consumer/temperature-consumer/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consumer/temperature-consumer/src/main/java/com/example/osgi/consumer/temperature/Activator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/consumer/temperature-consumer/src/main/java/com/example/osgi/consumer/temperature/TemperatureConsumerService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/producer/temperature-producer/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/producer/temperature-producer/src/main/java/com/example/osgi/producer/temperature/Activator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/producer/temperature-producer/src/main/java/com/example/osgi/producer/temperature/TemperatureService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/producer/temperature-producer/src/main/java/com/example/osgi/producer/temperature/TemperatureServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/consumer/temperature-consumer/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/consumer/temperature-consumer/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/consumer/temperature-consumer/src/main/java/com/example/osgi/consumer/temperature/TemperatureConsumerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/consumer/temperature-consumer/src/main/java/com/example/osgi/consumer/temperature/TemperatureConsumerService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/osgi/Activator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/producer/temperature-producer/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/producer/temperature-producer/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,7 +27,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="hasi/test-01" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -79,14 +72,15 @@
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "MavenSettings",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\AllJavaProjects\SAAssignment1\Herbifors" />
       <recent name="D:\AllJavaProjects\SAAssignment1\Herbifors\producer\temperature-producer\src\main\java\com\example\osgi\producer\temperature" />
     </key>
   </component>
@@ -110,7 +104,8 @@
       <workItem from="1740781930472" duration="671000" />
       <workItem from="1740802039217" duration="880000" />
       <workItem from="1740803564688" duration="109000" />
-      <workItem from="1740804230772" duration="11707000" />
+      <workItem from="1740804230772" duration="12062000" />
+      <workItem from="1740885354227" duration="7777000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -128,7 +123,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740850147521</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="initial commit">
+      <option name="closed" value="true" />
+      <created>1740850443280</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1740850443280</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
