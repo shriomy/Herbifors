@@ -3,42 +3,44 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.example.osgi</groupId>
-    <artifactId>Herbifors</artifactId>
+    <groupId>com.example.osgi.producer.temperature</groupId>
+    <artifactId>temperature-producer</artifactId>
     <version>1.0</version>
-    <packaging>pom</packaging>
-    <modules>
-        <module>producer/temperature-producer</module>
-        <module>consumer/temperature-consumer</module>
-    </modules>
+    <packaging>bundle</packaging>
+
+    <parent>
+        <groupId>com.example.osgi</groupId>
+        <artifactId>Herbifors</artifactId>
+        <version>1.0</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
     </properties>
 
+    <!-- Add the OSGi Bundle Plugin -->
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>${maven-bundle-plugin.version}</version>
-<!--                <extensions>true</extensions>-->
-<!--                <configuration>-->
-<!--                    <instructions>-->
-<!--                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>-->
-<!--                        <Bundle-Version>${project.version}</Bundle-Version>-->
-<!--                        <Import-Package>org.osgi.framework, *</Import-Package>-->
-<!--                        <Require-Capability>osgi.ee;filter:="(osgi.ee=JavaSE)"</Require-Capability> &lt;!&ndash; Ensure this line is correct &ndash;&gt;-->
-<!--                    </instructions>-->
-<!--                </configuration>-->
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Bundle-Version>${project.version}</Bundle-Version>
+                        <Bundle-Activator>com.example.osgi.producer.temperature.TemperatureServiceImpl</Bundle-Activator>
+                        <Export-Package>com.example.osgi.producer.temperature</Export-Package>
+                        <Import-Package>org.osgi.framework</Import-Package>
+                    </instructions>
+                </configuration>
             </plugin>
         </plugins>
     </build>
-
 
     <dependencies>
         <!-- Apache Felix OSGi Core -->
@@ -48,20 +50,12 @@
             <version>7.0.5</version>
         </dependency>
 
-        <!-- Apache Felix SCR (Declarative Services) -->
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr</artifactId>
-            <version>2.2.0</version>
-        </dependency>
-
         <!-- OSGi Core API -->
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <version>6.0.0</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
-
-
 </project>
