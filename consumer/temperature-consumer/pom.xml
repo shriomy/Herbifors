@@ -33,7 +33,7 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <!-- Import the temperature-producer package -->
-                        <Import-Package>com.example.osgi.producer.temperature, org.osgi.framework</Import-Package>
+                        <Import-Package>com.example.osgi.producer.temperature, org.osgi.framework, org.osgi.service.event</Import-Package>
                         <Bundle-Activator>com.example.osgi.consumer.temperature.TemperatureConsumerService</Bundle-Activator>
                         <Export-Package>com.example.osgi.consumer.temperature</Export-Package>
 
@@ -68,8 +68,13 @@
         <dependency>
             <groupId>com.example.osgi.producer.temperature</groupId>
             <artifactId>temperature-producer</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.event</artifactId>
+            <version>1.4.0</version>
         </dependency>
     </dependencies>
 
