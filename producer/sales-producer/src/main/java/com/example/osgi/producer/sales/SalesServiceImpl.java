@@ -28,7 +28,7 @@ public class SalesServiceImpl implements SalesService, BundleActivator {
     }
 
     @Override
-    public String getSales() {
+    public String getOrders() {
         // Simulating a sales data retrieval
         return "Sales data";
     }

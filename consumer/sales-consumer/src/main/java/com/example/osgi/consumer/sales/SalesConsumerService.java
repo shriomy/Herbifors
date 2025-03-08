@@ -64,7 +64,7 @@ public class SalesConsumerService implements BundleActivator, EventHandler {
         if (salesServiceReference != null) {
             salesService = context.getService(salesServiceReference);
             if (salesService != null) {
-                String currentSales = salesService.getSales();
+                String currentSales = salesService.getOrders();
                 System.out.println("Test: Consumed Sales: " + currentSales);
             } else {
                 System.out.println("Failed to retrieve sales service.");
