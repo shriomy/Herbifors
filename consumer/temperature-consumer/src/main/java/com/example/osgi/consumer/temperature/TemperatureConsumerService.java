@@ -5,7 +5,11 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.event.Event;
+import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
+
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 
 public class TemperatureConsumerService implements BundleActivator, EventHandler {
@@ -19,6 +23,10 @@ public class TemperatureConsumerService implements BundleActivator, EventHandler
 
         this.context = context;
         System.out.println("Temperature Consumer started.");
+        // Register event handler for temperature updates
+        Dictionary<String, Object> properties = new Hashtable<>();
+        properties.put(EventConstants.EVENT_TOPIC, "com/example/temperature/update");
+        context.registerService(EventHandler.class.getName(), this, properties);
         testConsumeTemperature();  // test start consuming the service
 
         // Register this class as an event handler for the temperature update events

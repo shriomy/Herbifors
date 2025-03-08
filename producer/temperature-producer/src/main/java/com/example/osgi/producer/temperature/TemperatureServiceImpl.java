@@ -23,19 +23,20 @@ public class TemperatureServiceImpl implements TemperatureService, BundleActivat
         System.out.println("Temperature Producer started.");
 
         // Create an instance of the TemperatureServiceImpl
-        TemperatureServiceImpl temperatureService = new TemperatureServiceImpl();
+        //TemperatureServiceImpl temperatureService = new TemperatureServiceImpl();
 
         // Get the EventAdmin service (check if the service is available first)
         ServiceReference<EventAdmin> eventAdminRef = context.getServiceReference(EventAdmin.class);
         if (eventAdminRef != null) {
             eventAdmin = context.getService(eventAdminRef);
             System.out.println("EventAdmin service retrieved.");
+            simulateTemperatureUpdates();
         } else {
             System.out.println("EventAdmin service not found.");
         }
 
         // Register the TemperatureService as an OSGi service (register the actual service instance)
-        registration = context.registerService(TemperatureService.class, temperatureService, null);
+        registration = context.registerService(TemperatureService.class, this, null);
         System.out.println("TemperatureService registered.");
     }
 
@@ -79,7 +80,7 @@ public class TemperatureServiceImpl implements TemperatureService, BundleActivat
 
                 // Publish the event using EventAdmin
                 eventAdmin.postEvent(temperatureEvent);
-                System.out.println("Published temperature: " + currentTemperature + "°C");
+                //System.out.println("Published temperature: " + currentTemperature + "°C");
             }
         }).start();
     }
