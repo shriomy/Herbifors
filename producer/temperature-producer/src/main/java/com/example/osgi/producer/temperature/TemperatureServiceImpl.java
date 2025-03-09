@@ -16,16 +16,14 @@ public class TemperatureServiceImpl implements TemperatureService, BundleActivat
 
     private ServiceRegistration<TemperatureService> registration;
     private EventAdmin eventAdmin;
-
+    private volatile boolean running = true;  // Flag to control the loop
+    private final Random random = new Random();
 
     @Override
     public void start(BundleContext context) throws Exception {
         System.out.println("Temperature Producer started.");
 
-        // Create an instance of the TemperatureServiceImpl
-        //TemperatureServiceImpl temperatureService = new TemperatureServiceImpl();
-
-        // Get the EventAdmin service (check if the service is available first)
+        // Get the EventAdmin service
         ServiceReference<EventAdmin> eventAdminRef = context.getServiceReference(EventAdmin.class);
         if (eventAdminRef != null) {
             eventAdmin = context.getService(eventAdminRef);
@@ -45,30 +43,33 @@ public class TemperatureServiceImpl implements TemperatureService, BundleActivat
     public void stop(BundleContext context) throws Exception {
         System.out.println("Temperature Producer stopped.");
 
+        running = false; // stopping the temperature thread
+
+
         // Unregister the service
         if (registration != null) {
             registration.unregister();
         }
     }
 
-    private final Random random = new Random();
-
-
     @Override
     public float getTemperature() {
-        // Simulating a temperature reading
         return 20.0F + random.nextFloat() * (40.0F - 20.0F);
     }
 
-    // to simulate temperature updates and publish events
+    // simulate temperature updates and publish events
     private void simulateTemperatureUpdates() {
         // Simulate a new temperature every 5 seconds
         new Thread(() -> {
-            while (true) {
+            while (running) {
                 try {
                     Thread.sleep(5000); // Simulate delay between updates
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                }
+
+                if (!running) {
+                    break;
                 }
 
                 float currentTemperature = getTemperature();
@@ -80,8 +81,8 @@ public class TemperatureServiceImpl implements TemperatureService, BundleActivat
 
                 // Publish the event using EventAdmin
                 eventAdmin.postEvent(temperatureEvent);
-                //System.out.println("Published temperature: " + currentTemperature + "°C");
             }
         }).start();
     }
+
 }
