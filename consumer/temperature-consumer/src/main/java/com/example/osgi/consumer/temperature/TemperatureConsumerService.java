@@ -21,6 +21,7 @@ public class TemperatureConsumerService implements BundleActivator, EventHandler
     private BundleContext context;
     private ServiceReference<TemperatureService> temperatureServiceReference;
     private TemperatureService temperatureService;
+    private boolean fanOn = false;
 
     @Override
     public void start(BundleContext context) throws Exception {
@@ -52,12 +53,19 @@ public class TemperatureConsumerService implements BundleActivator, EventHandler
             float temperature = (float) event.getProperty("temperature");
             // Call the method to consume the temperature data
             consumeTemperature(temperature);
-            if (temperature > 30.0) {  // Adjust threshold as needed
-                System.out.println("Temperature too high! Sending request to start fan...");
-                sendFanControlRequest(true);
+
+            if (temperature > 30.0) {
+                System.out.println("Temperature too high!");
+                if(!fanOn){
+                    System.out.println("Sending request to start fan...");
+                    sendFanControlRequest(true);
+                }
             } else {
-                System.out.println("Temperature normal. Stopping fan...");
-                sendFanControlRequest(false);
+                System.out.println("Temperature normal.");
+                if(fanOn){
+                    System.out.println("Sending request Stopping fan......");
+                    sendFanControlRequest(false);
+                }
             }
         }
     }
@@ -97,6 +105,7 @@ public class TemperatureConsumerService implements BundleActivator, EventHandler
 
             if (responseCode == 200) {
                 System.out.println("Fan control request sent successfully.");
+                fanOn = turnOn;
             } else {
                 System.out.println("Failed to send fan control request. Response code: " + responseCode);
             }
