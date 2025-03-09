@@ -18,7 +18,7 @@ public class SalesConsumerService implements BundleActivator {
         this.context = context;
         System.out.println("Sales Consumer started.");
 
-        // Fetch and print orders from the database
+        // Consume sales data
         consumeSales();
     }
 
@@ -35,14 +35,25 @@ public class SalesConsumerService implements BundleActivator {
         if (salesServiceReference != null) {
             SalesService salesService = context.getService(salesServiceReference);
             if (salesService != null) {
-                System.out.println("Fetching orders from database...");
+                System.out.println("✅ SalesService found! Adding a test order...");
+
+                // Add a new order before fetching
+                Order testOrder = new Order("Alice", "Wheat", 50, 20.5, 25.0, "Farm A");
+                salesService.addOrder(testOrder);
+
+                // Fetch and print orders from the database
+                System.out.println("\n📄 Fetching all orders from the database...");
                 List<Order> orders = salesService.getOrders();
-                orders.forEach(System.out::println);
+                if (orders.isEmpty()) {
+                    System.out.println("❌ No orders found.");
+                } else {
+                    orders.forEach(System.out::println);
+                }
             } else {
-                System.out.println("Failed to retrieve SalesService.");
+                System.out.println("❌ Failed to retrieve SalesService.");
             }
         } else {
-            System.out.println("SalesService is not available.");
+            System.out.println("❌ SalesService is not available.");
         }
     }
 }

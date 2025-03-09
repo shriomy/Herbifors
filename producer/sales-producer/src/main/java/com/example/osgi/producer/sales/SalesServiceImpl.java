@@ -15,7 +15,6 @@ public class SalesServiceImpl implements SalesService, BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
-
         System.out.println("Sales Producer started.");
 
         // Load MySQL driver explicitly
@@ -26,10 +25,14 @@ public class SalesServiceImpl implements SalesService, BundleActivator {
         String user = "root";
         String password = "bilz123";
         connection = DriverManager.getConnection(url, user, password);
+        System.out.println("✅ Database connection established successfully!");
 
         // Register the SalesService as an OSGi service
         registration = context.registerService(SalesService.class, this, null);
-        System.out.println("SalesService registered.");
+        System.out.println("✅ SalesService registered successfully!");
+
+        // Display available service functions
+        displayServiceFunctions();
     }
 
     @Override
@@ -44,6 +47,7 @@ public class SalesServiceImpl implements SalesService, BundleActivator {
         // Close database connection
         if (connection != null && !connection.isClosed()) {
             connection.close();
+            System.out.println("❌ Database connection closed.");
         }
     }
 
@@ -58,8 +62,9 @@ public class SalesServiceImpl implements SalesService, BundleActivator {
             stmt.setDouble(5, order.getSellingPrice());
             stmt.setString(6, order.getLocation());
             stmt.executeUpdate();
+            System.out.println("✅ Order added successfully: " + order);
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("❌ Error adding order: " + e.getMessage());
         }
     }
 
@@ -80,9 +85,20 @@ public class SalesServiceImpl implements SalesService, BundleActivator {
                 );
                 orders.add(order);
             }
+            System.out.println("📄 Fetched " + orders.size() + " orders from the database.");
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("❌ Error fetching orders: " + e.getMessage());
         }
         return orders;
+    }
+
+    private void displayServiceFunctions() {
+        System.out.println("\n📌 Available SalesService Functions:");
+        System.out.println("+----------------+-------------------------------------+");
+        System.out.println("| Function Name  | Description                         |");
+        System.out.println("+----------------+-------------------------------------+");
+        System.out.println("| addOrder      | Adds a new order to the database    |");
+        System.out.println("| getOrders     | Retrieves all orders from database  |");
+        System.out.println("+----------------+-------------------------------------+\n");
     }
 }
