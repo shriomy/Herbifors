@@ -9,10 +9,8 @@
     <version>1.0</version>
     <packaging>pom</packaging>
     <modules>
-        <module>producer/temperature-producer</module>
         <module>consumer/temperature-consumer</module>
-        <module>producer/sales-producer</module>
-        <module>consumer/sales-consumer</module>
+        <module>producer/temperature-producer</module>
     </modules>
 
     <properties>
