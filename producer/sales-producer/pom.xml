@@ -3,23 +3,24 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.example.osgi</groupId>
-    <artifactId>Herbifors</artifactId>
+    <groupId>com.example.osgi.producer.sales</groupId>
+    <artifactId>sales-producer</artifactId>
     <version>1.0</version>
-    <packaging>pom</packaging>
-    <modules>
-        <module>producer/temperature-producer</module>
-        <module>consumer/temperature-consumer</module>
-        <module>producer/sales-producer</module>
-        <module>consumer/sales-consumer</module>
-    </modules>
+    <packaging>bundle</packaging>
+
+    <parent>
+        <groupId>com.example.osgi</groupId>
+        <artifactId>Herbifors</artifactId>
+        <version>1.0</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
+        <mysql.connector.version>8.0.32</mysql.connector.version>
     </properties>
 
     <build>
@@ -28,19 +29,30 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>${maven-bundle-plugin.version}</version>
-<!--                <extensions>true</extensions>-->
-<!--                <configuration>-->
-<!--                    <instructions>-->
-<!--                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>-->
-<!--                        <Bundle-Version>${project.version}</Bundle-Version>-->
-<!--                        <Import-Package>org.osgi.framework, *</Import-Package>-->
-<!--                        <Require-Capability>osgi.ee;filter:="(osgi.ee=JavaSE)"</Require-Capability> &lt;!&ndash; Ensure this line is correct &ndash;&gt;-->
-<!--                    </instructions>-->
-<!--                </configuration>-->
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Bundle-Version>${project.version}</Bundle-Version>
+                        <Bundle-Activator>com.example.osgi.producer.sales.SalesServiceImpl</Bundle-Activator>
+                        <Export-Package>com.example.osgi.producer.sales</Export-Package>
+                        <Import-Package>
+                            org.osgi.framework,
+                            javax.sql,
+                            org.osgi.service.jdbc,
+                            org.osgi.service.event,
+                            com.mysql.cj.jdbc,  <!-- Properly import MySQL JDBC -->
+                            org.osgi.service.component.annotations,
+                            *
+                        </Import-Package>
+                        <Require-Capability>
+                            osgi.ee;filter:="(osgi.ee=JavaSE)"
+                        </Require-Capability>
+                    </instructions>
+                </configuration>
             </plugin>
         </plugins>
     </build>
-
 
     <dependencies>
         <!-- Apache Felix OSGi Core -->
@@ -50,19 +62,13 @@
             <version>7.0.5</version>
         </dependency>
 
-        <!-- Apache Felix SCR (Declarative Services) -->
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr</artifactId>
-            <version>2.2.0</version>
-        </dependency>
-
         <!-- OSGi Core API -->
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <version>6.0.0</version>
         </dependency>
+
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.service.event</artifactId>
@@ -77,11 +83,5 @@
             <version>8.3.0</version>
         </dependency>
 
-
-
-
-        <!---->
     </dependencies>
-
-
 </project>
