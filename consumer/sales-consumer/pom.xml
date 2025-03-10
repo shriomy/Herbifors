@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.example.osgi.consumer.delivery</groupId>
-    <artifactId>delivery-consumer</artifactId>
+    <groupId>com.example.osgi.consumer.sales</groupId>
+    <artifactId>sales-consumer</artifactId>
     <version>1.0</version>
     <packaging>bundle</packaging>
 
@@ -33,9 +33,9 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <!-- Import the temperature-producer package -->
-                        <Import-Package>com.example.osgi.producer.delivery, org.osgi.framework, org.osgi.service.event</Import-Package>
-                        <Bundle-Activator>com.example.osgi.consumer.delivery.DeliveryConsumer</Bundle-Activator>
-                        <Export-Package>com.example.osgi.consumer.delivery</Export-Package>
+                        <Import-Package>com.example.osgi.producer.sales, org.osgi.framework, org.osgi.service.event,org.osgi.service.component.annotations</Import-Package>
+                        <Bundle-Activator>com.example.osgi.consumer.sales.SalesConsumerService</Bundle-Activator>
+                        <Export-Package>com.example.osgi.consumer.sales</Export-Package>
 
                     </instructions>
                 </configuration>
@@ -51,6 +51,12 @@
             <version>7.0.5</version>
         </dependency>
 
+        <!-- Apache Felix SCR (Declarative Services) -->
+        <!--        <dependency>-->
+        <!--            <groupId>org.apache.felix</groupId>-->
+        <!--            <artifactId>org.apache.felix.scr</artifactId>-->
+        <!--            <version>2.2.0</version>-->
+        <!--        </dependency>-->
 
         <!-- OSGi Core API -->
         <dependency>
@@ -60,8 +66,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.example.osgi.producer.delivery</groupId>
-            <artifactId>delivery-producer</artifactId>
+            <groupId>com.example.osgi.producer.sales</groupId>
+            <artifactId>sales-producer</artifactId>
             <version>1.0</version>
             <scope>compile</scope>
         </dependency>

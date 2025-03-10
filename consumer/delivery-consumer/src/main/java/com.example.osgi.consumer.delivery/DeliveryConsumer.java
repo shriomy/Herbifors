@@ -5,6 +5,8 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.Scanner;
 
 public class DeliveryConsumer implements BundleActivator {
@@ -19,11 +21,15 @@ public class DeliveryConsumer implements BundleActivator {
             DeliveryService service = context.getService(serviceRef);
 
             Scanner scanner = new Scanner(System.in);
+
             String trackingId;
 
             while (true) {
-                System.out.println("Enter Order ID to check delivery status (or -1 to exit):");
+                System.out.print("Enter Order ID to check delivery status (or -1 to exit): ");
                 trackingId = scanner.nextLine();
+
+                // Echo the input back to the console
+                System.out.println("You entered: " + trackingId);
 
                 if ("-1".equals(trackingId)) {
                     break;
@@ -33,8 +39,6 @@ public class DeliveryConsumer implements BundleActivator {
 
                 System.out.println("Delivery Status: " + status);
             }
-
-
 
             context.ungetService(serviceRef);
         } else {
