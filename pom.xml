@@ -13,6 +13,7 @@
         <module>consumer/temperature-consumer</module>
         <module>producer/sales-producer</module>
         <module>consumer/sales-consumer</module>
+        <module>producer/soil-moisture-producer</module>
     </modules>
 
     <properties>
