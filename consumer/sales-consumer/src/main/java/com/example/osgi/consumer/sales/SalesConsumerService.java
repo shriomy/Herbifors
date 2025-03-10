@@ -13,13 +13,11 @@ import java.util.List;
 
 public class SalesConsumerService implements BundleActivator {
 
-    private BundleContext context;
     private ServiceReference<SalesService> salesServiceReference;
-    private BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
     @Override
     public void start(BundleContext context) {
-        this.context = context;
         System.out.println("📦 Sales Consumer started.");
 
         // Fetch the SalesService
@@ -52,9 +50,9 @@ public class SalesConsumerService implements BundleActivator {
     private void displayMenu(SalesService salesService) {
         while (true) {
             System.out.println("\n📌 Sales Consumer Menu:");
-            System.out.println("1️⃣ Add a new order");
-            System.out.println("2️⃣ View all orders");
-            System.out.println("3️⃣ Exit");
+            System.out.println("1️. Add a new order");
+            System.out.println("2️. View all orders");
+            System.out.println("3️. Exit");
             int choice = getIntInput("➡️ Choose an option: ");
             switch (choice) {
                 case 1:
