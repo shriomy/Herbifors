@@ -39,6 +39,8 @@ public class TemperatureConsumerService implements BundleActivator, EventHandler
 
     @Override
     public void stop(BundleContext context) throws Exception {
+        System.out.println("Stopping fan due to stopping the consumer......");
+        sendFanControlRequest(false);
         System.out.println("Temperature Consumer stopped.");
         if (temperatureServiceReference != null) {
             context.ungetService(temperatureServiceReference);
