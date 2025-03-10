@@ -11,6 +11,8 @@
     <modules>
         <module>consumer/temperature-consumer</module>
         <module>producer/temperature-producer</module>
+        <module>consumer/delivery-consumer</module>
+        <module>producer/delivery-producer</module>
     </modules>
 
     <properties>

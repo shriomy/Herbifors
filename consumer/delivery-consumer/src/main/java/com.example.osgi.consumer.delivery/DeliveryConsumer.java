@@ -1,35 +1,44 @@
 package com.example.osgi.consumer.delivery;
 
+import com.example.osgi.producer.delivery.DeliveryService;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
-public class DeliveryConsumer implements BundleActivator  {
+import java.util.Scanner;
+
+public class DeliveryConsumer implements BundleActivator {
     @Override
     public void start(BundleContext context) throws Exception {
-        System.out.println("Delivery Client: Looking for services...");
+        System.out.println("Delivery Client: Looking for Delivery Service...");
 
-        // Get DeliveryService
-        ServiceReference<DeliveryService> deliveryRef = context.getServiceReference(DeliveryService.class);
-        // Get NotificationService
-        ServiceReference<NotificationService> notificationRef = context.getServiceReference(NotificationService.class);
+        // Get the combined service
+        ServiceReference<DeliveryService> serviceRef = context.getServiceReference(DeliveryService.class);
 
-        if (deliveryRef != null && notificationRef != null) {
-            DeliveryService deliveryService = context.getService(deliveryRef);
-            NotificationService notificationService = context.getService(notificationRef);
+        if (serviceRef != null) {
+            DeliveryService service = context.getService(serviceRef);
 
-            String trackingId = "PKG123"; // Example tracking ID
-            boolean delivered = deliveryService.isDelivered(trackingId);
+            Scanner scanner = new Scanner(System.in);
+            String trackingId;
 
-            if (delivered) {
-                System.out.println("Delivery Client: Package " + trackingId + " is delivered!");
-                notificationService.sendNotification("Your package " + trackingId + " has arrived!");
-            } else {
-                System.out.println("Delivery Client: Package " + trackingId + " is still in transit.");
-                notificationService.sendNotification("Your package " + trackingId + " is on the way.");
+            while (true) {
+                System.out.println("Enter Order ID to check delivery status (or -1 to exit):");
+                trackingId = scanner.nextLine();
+
+                if ("-1".equals(trackingId)) {
+                    break;
+                }
+
+                String status = service.getDeliveryStatus(trackingId);
+
+                System.out.println("Delivery Status: " + status);
             }
 
-            context.ungetService(deliveryRef);
-            context.ungetService(notificationRef);
+
+
+            context.ungetService(serviceRef);
         } else {
-            System.out.println("Delivery Client: One or more services not found.");
+            System.out.println("Delivery Client: Service not found.");
         }
     }
 
