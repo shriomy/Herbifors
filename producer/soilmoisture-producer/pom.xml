@@ -34,13 +34,35 @@
                     <instructions>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Bundle-Activator>com.example.osgi.producer.</Bundle-Activator>
-                        <Export-Package>com.example.osgi.producer.temperature,org.osgi.service.event</Export-Package>
+                        <Bundle-Activator>com.example.osgi.producer.soilmoisture.SoilMoistureServiceImpl</Bundle-Activator>
+                        <Export-Package>com.example.osgi.producer.soinmoisture,org.osgi.service.event</Export-Package>
                         <Import-Package>org.osgi.framework, org.osgi.service.event</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <!-- Apache Felix OSGi Core -->
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.framework</artifactId>
+            <version>7.0.5</version>
+        </dependency>
+
+        <!-- OSGi Core API -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>6.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.event</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+    </dependencies>
 
 </project>
