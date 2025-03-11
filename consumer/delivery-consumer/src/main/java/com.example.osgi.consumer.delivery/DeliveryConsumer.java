@@ -1,6 +1,7 @@
 package com.example.osgi.consumer.delivery;
 
 import com.example.osgi.producer.delivery.DeliveryService;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -15,6 +16,7 @@ public class DeliveryConsumer implements BundleActivator {
 
         // Get the DeliveryService reference
         ServiceReference<DeliveryService> serviceRef = context.getServiceReference(DeliveryService.class);
+
 
         if (serviceRef != null) {
             DeliveryService service = context.getService(serviceRef);
