@@ -1,4 +1,4 @@
-/*package com.example.osgi.consumer.financeManager;
+package com.example.osgi.consumer.financeManager;
 
 
 import com.example.osgi.producer.harvestTracker.HarvestTrackingService;
@@ -25,14 +25,14 @@ public class FinanceManager implements BundleActivator {
             // Calculate ROI and revenue for each crop
             for (Map.Entry<Integer, String> entry : crops.entrySet()) {
                 int cropId = entry.getKey();
-                double roi = harvestService.calculateROI(cropId);
-                double revenue = harvestService.calculateRevenue(cropId);
-                System.out.println("💵 Crop ID " + cropId + " - ROI: $" + roi + ", Revenue: $" + revenue);
+               // double roi = harvestService.calculateROI(cropId);
+               // double revenue = harvestService.calculateRevenue(cropId);
+                //System.out.println("💵 Crop ID " + cropId + " - ROI: $" + roi + ", Revenue: $" + revenue);
             }
 
             // Calculate total revenue
-            double totalRevenue = harvestService.calculateTotalRevenue();
-            System.out.println("💰 Total Revenue: $" + totalRevenue);
+            //double totalRevenue = harvestService.calculateTotalRevenue();
+            //System.out.println("💰 Total Revenue: $" + totalRevenue);
         } else {
             System.out.println("❌ Harvest Service Not Found");
         }
@@ -47,4 +47,4 @@ public class FinanceManager implements BundleActivator {
     }
 }
 
- */
+
