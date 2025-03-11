@@ -53,11 +53,12 @@ public class DeliveryServiceImpl implements DeliveryService, BundleActivator {
     @Override
     public List<DeliveryOrder> getDeliveries() {
         List<DeliveryOrder> deliveries = new ArrayList<>();
-        String query = "SELECT customer, address, item, delivery_date, status FROM deliveries";
+        String query = "SELECT id, customer, address, item, delivery_date, status FROM deliveries";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
                 DeliveryOrder order = new DeliveryOrder(
+                        rs.getInt("id"),
                         rs.getString("customer"),
                         rs.getString("address"),
                         rs.getString("item"),
@@ -87,6 +88,46 @@ public class DeliveryServiceImpl implements DeliveryService, BundleActivator {
             }
         } catch (SQLException e) {
             System.out.println("❌ Error updating delivery status: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<DeliveryOrder> getDeliveriesByCustomer(String customerName) {
+        List<DeliveryOrder> deliveries = new ArrayList<>();
+        String query = "SELECT id, customer, address, item, delivery_date, status FROM deliveries WHERE customer = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, customerName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    deliveries.add(new DeliveryOrder(
+                            rs.getInt("id"),
+                            rs.getString("customer"),
+                            rs.getString("address"),
+                            rs.getString("item"),
+                            rs.getString("delivery_date"),
+                            rs.getString("status")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("❌ Error fetching deliveries for customer: " + e.getMessage());
+        }
+        return deliveries;
+    }
+
+    @Override
+    public void deleteDelivery(int deliveryId) {
+        String query = "DELETE FROM deliveries WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, deliveryId);
+            int rowsDeleted = stmt.executeUpdate();
+            if (rowsDeleted > 0) {
+                System.out.println("✅ Delivery deleted successfully for ID: " + deliveryId);
+            } else {
+                System.out.println("⚠ No delivery found with ID: " + deliveryId);
+            }
+        } catch (SQLException e) {
+            System.out.println("❌ Error deleting delivery: " + e.getMessage());
         }
     }
 
