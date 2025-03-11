@@ -35,6 +35,8 @@ public class SoilMoistureConsumer implements BundleActivator, EventHandler {
 
     @Override
     public void stop(BundleContext context) throws Exception {
+        System.out.println("Sending request to stop water pump due to stopping the consumer...");
+        sendWaterPumpControlRequest(false);
         System.out.println("Soil Moisture Consumer stopped.");
         if (soilMoistureServiceReference != null) {
             context.ungetService(soilMoistureServiceReference);
@@ -54,13 +56,13 @@ public class SoilMoistureConsumer implements BundleActivator, EventHandler {
                 System.out.println("Soil Moisture level within threshold.");
                 if(!waterPumpOn){
                     System.out.println("Sending request to stop water pump...");
-                    sendFanControlRequest(false);
+                    sendWaterPumpControlRequest(false);
                 }
             } else {
                 System.out.println("Soil Moisture level lower than threshold.");
                 if(waterPumpOn){
                     System.out.println("Sending request to turn on water pump......");
-                    sendFanControlRequest(true);
+                    sendWaterPumpControlRequest(true);
                 }
             }
         }
@@ -90,7 +92,7 @@ public class SoilMoistureConsumer implements BundleActivator, EventHandler {
 
 
     //simulated method
-    public void sendFanControlRequest(boolean turnOn) {
+    public void sendWaterPumpControlRequest(boolean turnOn) {
         // Simulated ESP32 URL (not used in fake mode)
         String esp32Url = "http://192.168.8.130/" + (turnOn ? "start-pump" : "stop-pump");
 
