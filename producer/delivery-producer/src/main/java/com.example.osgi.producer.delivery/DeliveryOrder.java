@@ -1,36 +1,84 @@
+//package com.example.osgi.producer.delivery;
+//
+//import java.io.Serializable;
+//
+//public class DeliveryOrder implements Serializable {
+//    private String customer;
+//    private String address;
+//    private String item;
+//    private String deliveryDate;
+//    private String status;
+//
+//    public DeliveryOrder(String customer, String address, String item,  String deliveryDate, String status) {
+//        this.customer = customer;
+//        this.address = address;
+//        this.item = item;
+//        this.deliveryDate = deliveryDate;
+//        this.status = status;
+//    }
+//
+//    // Getters and Setters
+//    public String getCustomer() { return customer; }
+//    public void setCustomer(String customer) { this.customer = customer; }
+//
+//    public String getAddress() { return address; }
+//    public void setAddress(String address) { this.address = address; }
+//
+//    public String getItem() { return item; }
+//    public void setItem(String item) { this.item = item; }
+//
+//
+//
+//    public String getDeliveryDate() { return deliveryDate; }
+//    public void setDeliveryDate(String deliveryDate) { this.deliveryDate = deliveryDate; }
+//
+//    public String getStatus() { return status; }
+//    public void setStatus(String status) { this.status = status; }
+//
+//    @Override
+//    public String toString() {
+//        return "DeliveryOrder{" +
+//                "customer='" + customer + '\'' +
+//                ", address='" + address + '\'' +
+//                ", item='" + item + '\'' +
+//                ", deliveryDate='" + deliveryDate + '\'' +
+//                ", status='" + status + '\'' +
+//                '}';
+//    }
+//}
+
 package com.example.osgi.producer.delivery;
 
 import java.io.Serializable;
 
 public class DeliveryOrder implements Serializable {
-    private String recipient;
+
+    private int id;  // Auto-generated in the database
+    private String customer;
     private String address;
     private String item;
-    private int quantity;
     private String deliveryDate;
     private String status;
 
-    public DeliveryOrder(String recipient, String address, String item, int quantity, String deliveryDate, String status) {
-        this.recipient = recipient;
+    public DeliveryOrder( String customer, String address, String item, String deliveryDate, String status) {
+        this.customer = customer;
         this.address = address;
         this.item = item;
-        this.quantity = quantity;
         this.deliveryDate = deliveryDate;
         this.status = status;
     }
 
-    // Getters and Setters
-    public String getRecipient() { return recipient; }
-    public void setRecipient(String recipient) { this.recipient = recipient; }
+    // Getters (No setter for `id` since it's auto-generated)
+    public int getId() { return id; }
+
+    public String getCustomer() { return customer; }
+    public void setCustomer(String customer) { this.customer = customer; }
 
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
 
     public String getItem() { return item; }
     public void setItem(String item) { this.item = item; }
-
-    public int getQuantity() { return quantity; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
 
     public String getDeliveryDate() { return deliveryDate; }
     public void setDeliveryDate(String deliveryDate) { this.deliveryDate = deliveryDate; }
@@ -41,10 +89,10 @@ public class DeliveryOrder implements Serializable {
     @Override
     public String toString() {
         return "DeliveryOrder{" +
-                "recipient='" + recipient + '\'' +
+                "id=" + id +
+                ", customer='" + customer + '\'' +
                 ", address='" + address + '\'' +
                 ", item='" + item + '\'' +
-                ", quantity=" + quantity +
                 ", deliveryDate='" + deliveryDate + '\'' +
                 ", status='" + status + '\'' +
                 '}';

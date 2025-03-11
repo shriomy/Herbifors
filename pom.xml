@@ -9,12 +9,12 @@
     <version>1.0</version>
     <packaging>pom</packaging>
     <modules>
-        <module>consumer/temperature-consumer</module>
-        <module>producer/temperature-producer</module>
+
         <module>consumer/delivery-consumer</module>
         <module>producer/delivery-producer</module>
-        <module>producer/sales-producer</module>
         <module>consumer/sales-consumer</module>
+        <module>producer/sales-producer</module>
+
     </modules>
 
     <properties>
@@ -78,8 +78,6 @@
             <artifactId>mysql-connector-j</artifactId>
             <version>8.3.0</version>
         </dependency>
-
-
 
 
         <!---->

@@ -1,4 +1,3 @@
-
 package com.example.osgi.producer.delivery;
 
 import org.osgi.framework.BundleActivator;
@@ -37,14 +36,13 @@ public class DeliveryServiceImpl implements DeliveryService, BundleActivator {
 
     @Override
     public void addDelivery(DeliveryOrder order) {
-        String query = "INSERT INTO deliveries (recipient, address, item, qty, delivery_date, status) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO deliveries (customer, address, item, delivery_date, status) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, order.getRecipient());
+            stmt.setString(1, order.getCustomer());
             stmt.setString(2, order.getAddress());
             stmt.setString(3, order.getItem());
-            stmt.setInt(4, order.getQuantity());
-            stmt.setString(5, order.getDeliveryDate());
-            stmt.setString(6, order.getStatus());
+            stmt.setString(4, order.getDeliveryDate());
+            stmt.setString(5, order.getStatus());
             stmt.executeUpdate();
             System.out.println("✅ Delivery added successfully: " + order);
         } catch (SQLException e) {
@@ -55,15 +53,14 @@ public class DeliveryServiceImpl implements DeliveryService, BundleActivator {
     @Override
     public List<DeliveryOrder> getDeliveries() {
         List<DeliveryOrder> deliveries = new ArrayList<>();
-        String query = "SELECT * FROM deliveries";
+        String query = "SELECT customer, address, item, delivery_date, status FROM deliveries";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
                 DeliveryOrder order = new DeliveryOrder(
-                        rs.getString("recipient"),
+                        rs.getString("customer"),
                         rs.getString("address"),
                         rs.getString("item"),
-                        rs.getInt("qty"),
                         rs.getString("delivery_date"),
                         rs.getString("status")
                 );
@@ -75,4 +72,22 @@ public class DeliveryServiceImpl implements DeliveryService, BundleActivator {
         }
         return deliveries;
     }
+
+    @Override
+    public void updateDeliveryStatus(int deliveryId, String status) {
+        String query = "UPDATE deliveries SET status = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, status);
+            stmt.setInt(2, deliveryId);
+            int rowsUpdated = stmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.println("✅ Delivery status updated successfully for ID: " + deliveryId);
+            } else {
+                System.out.println("⚠ No delivery found with ID: " + deliveryId);
+            }
+        } catch (SQLException e) {
+            System.out.println("❌ Error updating delivery status: " + e.getMessage());
+        }
+    }
+
 }
