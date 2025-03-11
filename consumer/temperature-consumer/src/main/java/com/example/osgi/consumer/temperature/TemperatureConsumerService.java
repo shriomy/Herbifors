@@ -94,26 +94,45 @@ public class TemperatureConsumerService implements BundleActivator, EventHandler
         }
     }
 
+
+    //simulated method
     public void sendFanControlRequest(boolean turnOn) {
-        String esp32Url = "http://192.168.8.130/" + (turnOn ? "start-fan" : "stop-fan"); // Change IP
+        // Simulated ESP32 URL (not used in fake mode)
+        String esp32Url = "http://192.168.8.130/" + (turnOn ? "start-fan" : "stop-fan");
 
-        try {
-            URL url = new URL(esp32Url);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(5000);
-            connection.setReadTimeout(5000);
-            int responseCode = connection.getResponseCode();
+        // Simulating a successful request
+        System.out.println("Sending fan control request to " + esp32Url);
+        System.out.println("Fan control request sent successfully.");
 
-            if (responseCode == 200) {
-                System.out.println("Fan control request sent successfully.");
-                fanOn = turnOn;
-            } else {
-                System.out.println("Failed to send fan control request. Response code: " + responseCode);
-            }
-            connection.disconnect();
-        } catch (IOException e) {
-            System.out.println("Error sending fan control request: " + e.getMessage());
-        }
+        // Update the fan state as if the request was successful
+        fanOn = turnOn;
     }
+
+
+
+
+
+    //working method
+//    public void sendFanControlRequest(boolean turnOn) {
+//        String esp32Url = "http://192.168.8.130/" + (turnOn ? "start-fan" : "stop-fan"); // Change IP
+//
+//        try {
+//            URL url = new URL(esp32Url);
+//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//            connection.setRequestMethod("GET");
+//            connection.setConnectTimeout(5000);
+//            connection.setReadTimeout(5000);
+//            int responseCode = connection.getResponseCode();
+//
+//            if (responseCode == 200) {
+//                System.out.println("Fan control request sent successfully.");
+//                fanOn = turnOn;
+//            } else {
+//                System.out.println("Failed to send fan control request. Response code: " + responseCode);
+//            }
+//            connection.disconnect();
+//        } catch (IOException e) {
+//            System.out.println("Error sending fan control request: " + e.getMessage());
+//        }
+//    }
 }
