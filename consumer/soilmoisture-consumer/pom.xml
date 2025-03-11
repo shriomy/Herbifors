@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.example.osgi.consumer.temperature</groupId>
-    <artifactId>temperature-consumer</artifactId>
+    <groupId>com.example.osgi.consumer.soilmoisture</groupId>
+    <artifactId>soilmoisture-consumer</artifactId>
     <version>1.0</version>
     <packaging>bundle</packaging>
 
@@ -32,11 +32,10 @@
                     <instructions>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <!-- Import the temperature-producer package -->
-                        <Import-Package>com.example.osgi.producer.temperature, org.osgi.framework, org.osgi.service.event</Import-Package>
-                        <Bundle-Activator>com.example.osgi.consumer.temperature.TemperatureConsumerService</Bundle-Activator>
-                        <Export-Package>com.example.osgi.consumer.temperature</Export-Package>
-
+                        <!-- Import the soilmoisture-producer package -->
+                        <Import-Package>com.example.osgi.producer.soilmoisture, org.osgi.framework, org.osgi.service.event</Import-Package>
+                        <Bundle-Activator>com.example.osgi.consumer.soilmoisture.SoilMoistureConsumer</Bundle-Activator>
+                        <Export-Package>com.example.osgi.consumer.soilmoisture</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -59,8 +58,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.example.osgi.producer.temperature</groupId>
-            <artifactId>temperature-producer</artifactId>
+            <groupId>com.example.osgi.producer.soilmoisture</groupId>
+            <artifactId>soilmoisture-producer</artifactId>
             <version>1.0</version>
             <scope>compile</scope>
         </dependency>
@@ -70,5 +69,6 @@
             <version>1.4.0</version>
         </dependency>
     </dependencies>
+
 
 </project>

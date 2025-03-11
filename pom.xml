@@ -14,6 +14,7 @@
         <module>producer/sales-producer</module>
         <module>consumer/sales-consumer</module>
         <module>producer/soilmoisture-producer</module>
+        <module>consumer/soilmoisture-consumer</module>
     </modules>
 
     <properties>

@@ -35,7 +35,7 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Bundle-Activator>com.example.osgi.producer.soilmoisture.SoilMoistureServiceImpl</Bundle-Activator>
-                        <Export-Package>com.example.osgi.producer.soinmoisture,org.osgi.service.event</Export-Package>
+                        <Export-Package>com.example.osgi.producer.soilmoisture,org.osgi.service.event</Export-Package>
                         <Import-Package>org.osgi.framework, org.osgi.service.event</Import-Package>
                     </instructions>
                 </configuration>
