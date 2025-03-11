@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.example.osgi</groupId>
+        <artifactId>Herbifors</artifactId>
+        <version>1.0</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <groupId>com.example.osgi.consumer.warehouseInventory</groupId>
+    <artifactId>warehouse-inventory</artifactId>
+    <version>1.0</version>
+    <packaging>bundle</packaging>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>${maven-bundle-plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Bundle-Version>${project.version}</Bundle-Version>
+                        <!-- Import the temperature-producer package -->
+                        <Import-Package>com.example.osgi.producer.harvestTracker, org.osgi.framework</Import-Package>
+                        <Bundle-Activator>com.example.osgi.consumer.warehouseInventory.WarehouseInventory</Bundle-Activator>
+                        <Export-Package>com.example.osgi.consumer.warehouseInventory</Export-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <!-- Apache Felix OSGi Core -->
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.framework</artifactId>
+            <version>7.0.5</version>
+        </dependency>
+
+        <!-- Apache Felix SCR (Declarative Services) -->
+        <!--        <dependency>-->
+        <!--            <groupId>org.apache.felix</groupId>-->
+        <!--            <artifactId>org.apache.felix.scr</artifactId>-->
+        <!--            <version>2.2.0</version>-->
+        <!--        </dependency>-->
+
+        <!-- OSGi Core API -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>6.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.example.osgi.producer.harvestTracker</groupId>
+            <artifactId>harvest-tracker</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- Apache Felix OSGi Util (for ServiceTracker) -->
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.utils</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+    </dependencies>
+
+</project>
