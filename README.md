@@ -48,4 +48,27 @@ Herbifors/                         # Root project folder
 
 folder structure for OSGi root project
 
-commit from nimasha
+
+How to Run,
+
+1. Start Felix Gogo Shell
+    navigate felix framework directory and enter  java -jar bin/felix.jar
+2. Compile code into jar bundles
+    mvn clean install
+3. Install jar files to felix
+    install file:/<jar files path>.jar , Note: install event admin
+4. Start consumers & Services
+    start <bundle Id of event admin>
+    start <bundle Id>
+5. Stop consumers & Services
+    stop <bundle Id>
+6. Uninstall bundles
+    uninstall <bundle Id>
+
+Installation and starting order
+
+mysql-connector-j-8.3.0.jar
+org.apache.felix.eventadmin-1.6.4.jar
+org.osgi.enterprise-5.0.0.jar
+org.osgi.service.event-1.4.1.jar
+org.osgi.service.jdbc-1.0.0.jar

@@ -1,4 +1,4 @@
-package com.example.osgi.producer.temperature;
+package com.example.osgi.producer.soilmoisture;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -7,41 +7,40 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class TemperatureServiceImpl implements TemperatureService, BundleActivator {
+public class SoilMoistureServiceImpl implements BundleActivator, SoilMoistureService {
 
-    private ServiceRegistration<TemperatureService> registration;
+    private ServiceRegistration<SoilMoistureService> registration;
     private EventAdmin eventAdmin;
     private volatile boolean running = true;  // Flag to control the loop
     private final Random random = new Random();
 
     @Override
     public void start(BundleContext context) throws Exception {
-        System.out.println("Temperature Producer started.");
+        System.out.println("SoilMoisture Producer started.");
 
         // Get the EventAdmin service
         ServiceReference<EventAdmin> eventAdminRef = context.getServiceReference(EventAdmin.class);
         if (eventAdminRef != null) {
             eventAdmin = context.getService(eventAdminRef);
             System.out.println("EventAdmin service retrieved.");
-            simulateTemperatureUpdates();
+            simulateSoilMoistureUpdates();
         } else {
             System.out.println("EventAdmin service not found.");
         }
 
         // Register the TemperatureService as an OSGi service (register the actual service instance)
-        registration = context.registerService(TemperatureService.class, this, null);
-        System.out.println("TemperatureService registered.");
+        registration = context.registerService(SoilMoistureService.class, this, null);
+        System.out.println("SoilMoisture Service registered.");
     }
 
 
     @Override
     public void stop(BundleContext context) throws Exception {
-        System.out.println("Temperature Producer stopped.");
+        System.out.println("SoilMoisture Producer stopped.");
 
         running = false; // stopping the temperature thread
 
@@ -53,13 +52,13 @@ public class TemperatureServiceImpl implements TemperatureService, BundleActivat
     }
 
     @Override
-    public float getTemperature() {
+    public float getSoilMoisture() {
         return 20.0F + random.nextFloat() * (40.0F - 20.0F);
     }
 
-    // simulate temperature updates and publish events
-    private void simulateTemperatureUpdates() {
-        // Simulate a new temperature every 5 seconds
+    // simulate soil moisture updates and publish events
+    private void simulateSoilMoistureUpdates() {
+        // Simulate a new SoilMoisture level every 5 seconds
         new Thread(() -> {
             while (running) {
                 try {
@@ -72,15 +71,15 @@ public class TemperatureServiceImpl implements TemperatureService, BundleActivat
                     break;
                 }
 
-                float currentTemperature = getTemperature();
+                float currentSoilMoisture = getSoilMoisture();
 
                 // Create event with the new temperature
                 Map<String, Object> properties = new HashMap<>();
-                properties.put("temperature", currentTemperature);
-                Event temperatureEvent = new Event("com/example/temperature/update", properties);
+                properties.put("soilMoisture", currentSoilMoisture);
+                Event soilMoistureEvent = new Event("com/example/soilMoisture/update", properties);
 
                 // Publish the event using EventAdmin
-                eventAdmin.postEvent(temperatureEvent);
+                eventAdmin.postEvent(soilMoistureEvent);
             }
         }).start();
     }
