@@ -63,3 +63,11 @@ How to Run,
     stop <bundle Id>
 6. Uninstall bundles
     uninstall <bundle Id>
+
+Installation and starting order
+
+mysql-connector-j-8.3.0.jar
+org.apache.felix.eventadmin-1.6.4.jar
+org.osgi.enterprise-5.0.0.jar
+org.osgi.service.event-1.4.1.jar
+org.osgi.service.jdbc-1.0.0.jar

@@ -1,0 +1,74 @@
+#include <WiFi.h>
+#include <ESPAsyncWebServer.h>
+#include <DHT.h>
+
+
+const char* ssid = "Dialog 4G - Hasintha"; //"Codegen-SLIIT";
+const char* password = "DataHora699#";//"Cg#Slab@wifi01";
+
+AsyncWebServer server(80);
+
+//Pins
+#define FAN_PIN 18
+#define DHTPIN 4
+#define DHTTYPE DHT11
+
+
+DHT dht(DHTPIN, DHTTYPE);
+float preTemperature = -999;
+
+int   preMoisture = -999;
+float preHumidity = -999;
+
+void setup() {
+    Serial.begin(115200);
+    pinMode(FAN_PIN, OUTPUT); // test fan ON
+    pinMode(FAN_PIN, INPUT); // Fan OFF initially
+
+    dht.begin();
+    WiFi.begin(ssid, password);
+
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(1000);
+        Serial.print(".");
+    }
+    Serial.println("WiFi connected.");
+    Serial.print("ESP32 IP Address: ");
+    Serial.println(WiFi.localIP());
+
+    // Start server
+    server.on("/start-fan", HTTP_GET, [](AsyncWebServerRequest *request) {
+        pinMode(FAN_PIN, OUTPUT); // Turn fan ON
+        Serial.println("Fan turn ON");
+        request->send(200, "text/plain", "Fan started");
+    });
+
+    server.on("/stop-fan", HTTP_GET, [](AsyncWebServerRequest *request) {
+        pinMode(FAN_PIN, INPUT); // Turn fan OFF
+        Serial.println("Fan turn OFF");
+        request->send(200, "text/plain", "Fan stopped");
+    });
+
+    server.begin();
+}
+
+void loop() {
+    delay(1000);
+    float temperature = dht.readTemperature();
+    float humidity =  dht.readHumidity();
+
+    if (isnan(temperature)) {
+    Serial.println("Failed to read temperature from DHT sensor");
+    return;
+    }
+
+    // if (temperature != preTemperature || humidity != preHumidity || moisture != preMoisture) {
+    Serial.print("Temperature: ");
+    Serial.print(temperature);
+    Serial.print(" °C");
+
+    Serial.print(" | Humidity: ");
+    Serial.print(humidity);
+    Serial.println("%");
+
+}
