@@ -1,65 +1,78 @@
+
 package com.example.osgi.producer.delivery;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
-import java.util.HashSet;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class DeliveryServiceImpl implements DeliveryService, BundleActivator {
-    private ServiceRegistration<DeliveryService> serviceRegistration;
-    private final Set<String> deliveredPackages = new HashSet<>();
-
-    private final List<String> orders = List.of(
-            "ORD001, John Doe, Laptop, $1000, $800, 123 Main St, NY",
-            "ORD002, Jane Smith, Phone, $500, $350, 456 Elm St, CA",
-            "ORD003, Alice Johnson, Tablet, $300, $200, 789 Pine St, TX",
-            "ORD004, Bob Brown, Headphones, $150, $100, 321 Oak St, FL",
-            "ORD005, Charlie White, Smartwatch, $250, $180, 654 Maple St, IL",
-            "ORD006, Daniel Green, Monitor, $400, $320, 987 Birch St, WA",
-            "ORD007, Ella Black, Keyboard, $120, $80, 741 Cedar St, CO",
-            "ORD008, Frank Harris, Mouse, $60, $40, 852 Walnut St, NV",
-            "ORD009, Grace Lewis, Printer, $350, $270, 963 Aspen St, AZ",
-            "ORD010, Henry Scott, Speakers, $200, $150, 159 Redwood St, OR"
-    );
-
+    private ServiceRegistration<DeliveryService> registration;
+    private Connection connection;
 
     @Override
     public void start(BundleContext context) throws Exception {
-        System.out.println("Delivery Service: Starting...");
+        System.out.println("Delivery Producer started.");
 
-        deliveredPackages.add("ORD001");
-        deliveredPackages.add("ORD002");
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/delivery", "root", "root");
+        System.out.println("✅ Database connection established successfully!");
 
-        serviceRegistration = context.registerService(DeliveryService.class, this, null);
-
-        System.out.println("Delivery Service: Registered.");
+        registration = context.registerService(DeliveryService.class, this, null);
+        System.out.println("✅ DeliveryService registered successfully!");
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
-        System.out.println("Delivery Service: Stopping...");
-
-        if (serviceRegistration != null) {
-            serviceRegistration.unregister();
+        System.out.println("Delivery Producer stopped.");
+        if (registration != null) registration.unregister();
+        if (connection != null && !connection.isClosed()) {
+            connection.close();
+            System.out.println("❌ Database connection closed.");
         }
-
-        System.out.println("Delivery Service: Unregistered.");
-    }
-
-
-    @Override
-    public String getDeliveryStatus(String trackingId) {
-        if (deliveredPackages.contains(trackingId)) {
-            return "Delivered";
-        }
-        return "Not delivered";
     }
 
     @Override
-    public void sendNotification(String message) {
-        System.out.println("Notification Sent: " + message);
+    public void addDelivery(DeliveryOrder order) {
+        String query = "INSERT INTO deliveries (recipient, address, item, qty, delivery_date, status) VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, order.getRecipient());
+            stmt.setString(2, order.getAddress());
+            stmt.setString(3, order.getItem());
+            stmt.setInt(4, order.getQuantity());
+            stmt.setString(5, order.getDeliveryDate());
+            stmt.setString(6, order.getStatus());
+            stmt.executeUpdate();
+            System.out.println("✅ Delivery added successfully: " + order);
+        } catch (SQLException e) {
+            System.out.println("❌ Error adding delivery: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<DeliveryOrder> getDeliveries() {
+        List<DeliveryOrder> deliveries = new ArrayList<>();
+        String query = "SELECT * FROM deliveries";
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                DeliveryOrder order = new DeliveryOrder(
+                        rs.getString("recipient"),
+                        rs.getString("address"),
+                        rs.getString("item"),
+                        rs.getInt("qty"),
+                        rs.getString("delivery_date"),
+                        rs.getString("status")
+                );
+                deliveries.add(order);
+            }
+            System.out.println("📄 Fetched " + deliveries.size() + " deliveries from the database.");
+        } catch (SQLException e) {
+            System.out.println("❌ Error fetching deliveries: " + e.getMessage());
+        }
+        return deliveries;
     }
 }

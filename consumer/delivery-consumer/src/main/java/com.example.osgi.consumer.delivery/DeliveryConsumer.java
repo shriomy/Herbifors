@@ -5,8 +5,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Scanner;
 
 public class DeliveryConsumer implements BundleActivator {
@@ -14,30 +13,34 @@ public class DeliveryConsumer implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         System.out.println("Delivery Client: Looking for Delivery Service...");
 
-        // Get the combined service
+        // Get the DeliveryService reference
         ServiceReference<DeliveryService> serviceRef = context.getServiceReference(DeliveryService.class);
 
         if (serviceRef != null) {
             DeliveryService service = context.getService(serviceRef);
-
             Scanner scanner = new Scanner(System.in);
 
-            String trackingId;
-
             while (true) {
-                System.out.print("Enter Order ID to check delivery status (or -1 to exit): ");
-                trackingId = scanner.nextLine();
+                System.out.println("\n1. View all deliveries");
+                System.out.println("2. Exit");
+                System.out.print("Choose an option: ");
+                int choice = scanner.nextInt();
+                scanner.nextLine();
 
-                // Echo the input back to the console
-                System.out.println("You entered: " + trackingId);
-
-                if ("-1".equals(trackingId)) {
+                if (choice == 1) {
+                    List<com.example.osgi.producer.delivery.DeliveryOrder> deliveries = service.getDeliveries();
+                    if (deliveries.isEmpty()) {
+                        System.out.println("No deliveries found.");
+                    } else {
+                        for (com.example.osgi.producer.delivery.DeliveryOrder order : deliveries) {
+                            System.out.println(order);
+                        }
+                    }
+                } else if (choice == 2) {
                     break;
+                } else {
+                    System.out.println("Invalid option. Try again.");
                 }
-
-                String status = service.getDeliveryStatus(trackingId);
-
-                System.out.println("Delivery Status: " + status);
             }
 
             context.ungetService(serviceRef);

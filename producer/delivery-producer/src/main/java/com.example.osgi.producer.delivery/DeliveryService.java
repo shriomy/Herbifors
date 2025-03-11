@@ -1,6 +1,9 @@
+
 package com.example.osgi.producer.delivery;
 
+import java.util.List;
+
 public interface DeliveryService {
-    String getDeliveryStatus(String trackingId);
-    void sendNotification(String message);
+    void addDelivery(DeliveryOrder order);
+    List<DeliveryOrder> getDeliveries();
 }

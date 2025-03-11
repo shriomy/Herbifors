@@ -19,9 +19,10 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
+        <mysql.connector.version>8.0.32</mysql.connector.version>
     </properties>
 
-    <!-- Add the OSGi Bundle Plugin -->
     <build>
         <plugins>
             <plugin>
@@ -35,7 +36,18 @@
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Bundle-Activator>com.example.osgi.producer.delivery.DeliveryServiceImpl</Bundle-Activator>
                         <Export-Package>com.example.osgi.producer.delivery</Export-Package>
-                        <Import-Package>org.osgi.framework</Import-Package>
+                        <Import-Package>
+                            org.osgi.framework,
+                            javax.sql,
+                            org.osgi.service.jdbc,
+                            org.osgi.service.event,
+                            com.mysql.cj.jdbc,
+                            org.osgi.service.component.annotations,
+                            *
+                        </Import-Package>
+                        <Require-Capability>
+                            osgi.ee;filter:="(osgi.ee=JavaSE)"
+                        </Require-Capability>
                     </instructions>
                 </configuration>
             </plugin>
@@ -43,19 +55,28 @@
     </build>
 
     <dependencies>
-        <!-- Apache Felix OSGi Core -->
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.framework</artifactId>
             <version>7.0.5</version>
         </dependency>
 
-        <!-- OSGi Core API -->
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <version>6.0.0</version>
-            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.event</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>8.3.0</version>
         </dependency>
     </dependencies>
 </project>
