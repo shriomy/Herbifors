@@ -1,4 +1,3 @@
-// HarvestTrackingService.java
 package com.example.osgi.producer.harvestTracker;
 
 import java.util.List;
@@ -12,6 +11,6 @@ public interface HarvestTrackingService {
     List<Crop> getSortedCrops(String sortBy, boolean ascending);
     List<String> recommendCrops(String currentWeather);
     void exportCropDataToCSV(String filePath);
-    void displayCropData();
+    //void displayCropData();
     void closeConnection();
 }
