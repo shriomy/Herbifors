@@ -11,16 +11,19 @@ AsyncWebServer server(80);
 //Pins
 #define FAN_PIN 18
 #define PUMP_PIN 19
-
+const int moistureSensor = 32; // GPIO32 analog input for moisture sensor
 #define DHTPIN 4
 #define DHTTYPE DHT11
 
-
 DHT dht(DHTPIN, DHTTYPE);
-float preTemperature = -999;
 
+float preTemperature = -999;
 int   preMoisture = -999;
 float preHumidity = -999;
+float temperature = 0;
+float humidity = 0;
+float moisture = 0;
+int  moistureRaw = 0;
 
 void setup() {
     Serial.begin(115200);
@@ -41,51 +44,74 @@ void setup() {
     Serial.print("ESP32 IP Address: ");
     Serial.println(WiFi.localIP());
 
-    // Start server
+    //endpoint - Fan controll - start
     server.on("/start-fan", HTTP_GET, [](AsyncWebServerRequest *request) {
         pinMode(FAN_PIN, OUTPUT); // Turn fan ON
         Serial.println("Fan turn ON");
         request->send(200, "text/plain", "Fan started");
     });
-
+    //endpoint - fan controll - stop
     server.on("/stop-fan", HTTP_GET, [](AsyncWebServerRequest *request) {
         pinMode(FAN_PIN, INPUT); // Turn fan OFF
         Serial.println("Fan turn OFF");
         request->send(200, "text/plain", "Fan stopped");
     });
 
-  // Start server
+    // endpoint - pump controll - start
     server.on("/start-pump", HTTP_GET, [](AsyncWebServerRequest *request) {
-        pinMode(PUMP_PIN, OUTPUT); // Turn fan ON
+        pinMode(PUMP_PIN, OUTPUT); // Turn pump ON
         Serial.println("Pump turn ON");
         request->send(200, "text/plain", "Pump started");
     });
 
+    //endpoint - pump controll - stop
     server.on("/stop-pump", HTTP_GET, [](AsyncWebServerRequest *request) {
-        pinMode(PUMP_PIN, INPUT); // Turn fan OFF
+        pinMode(PUMP_PIN, INPUT); // Turn pump OFF
         Serial.println("Pump turn OFF");
         request->send(200, "text/plain", "Pump stopped");
+    });
+
+    // endpoint for temperature sensor data temperature
+    server.on("/sensor-temperature", HTTP_GET, [](AsyncWebServerRequest *request) {
+      temperature = dht.readTemperature();
+      if (isnan(temperature)) {
+        request->send(500, "text/plain", "Failed to read temperature");
+      }
+      else {
+        request->send(200, "text/plain", String(temperature));
+      }
+    });
+
+    // endpoint for moisture sensor data temperature
+    server.on("/sensor-moisture", HTTP_GET, [](AsyncWebServerRequest *request) {
+      moistureRaw = analogRead(moistureSensor);
+      moisture = 100 - (moistureRaw / 4095.0) * 100;
+      Serial.println("Moisture value: ");
+      Serial.print(moisture);
+      request->send(200, "text/plain", String(moisture));
     });
     server.begin();
 }
 
 void loop() {
-    delay(1000);
-    float temperature = dht.readTemperature();
-    float humidity =  dht.readHumidity();
+    // delay(1000);
+    // temperature = dht.readTemperature();
+    // humidity =  dht.readHumidity();
+    // int moisturex = analogRead(moistureSensor);
+    // moisture = 100 - (moisturex/4095.0)*100;
 
-    if (isnan(temperature)) {
-    Serial.println("Failed to read temperature from DHT sensor");
-    return;
-    }
+    // if (isnan(temperature)) {
+    // Serial.println("Failed to read temperature from DHT sensor");
+    // return;
+    // }
 
-    // if (temperature != preTemperature || humidity != preHumidity || moisture != preMoisture) {
-    Serial.print("Temperature: ");
-    Serial.print(temperature);
-    Serial.print(" °C");
+    // // if (temperature != preTemperature || humidity != preHumidity || moisture != preMoisture) {
+    // Serial.print("Temperature: ");
+    // Serial.print(temperature);
+    // Serial.print(" °C");
 
-    Serial.print(" | Humidity: ");
-    Serial.print(humidity);
-    Serial.println("%");
+    // Serial.print(" | Humidity: ");
+    // Serial.print(humidity);
+    // Serial.println("%");
 
 }
