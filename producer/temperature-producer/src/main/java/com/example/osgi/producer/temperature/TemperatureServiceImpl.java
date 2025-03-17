@@ -8,6 +8,11 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -57,9 +62,9 @@ public class TemperatureServiceImpl implements TemperatureService, BundleActivat
         return 20.0F + random.nextFloat() * (40.0F - 20.0F);
     }
 
-    // simulate temperature updates and publish events
+    // fetch temperature updates and publish events
     private void simulateTemperatureUpdates() {
-        // Simulate a new temperature every 5 seconds
+        // Fetch new temperature every 5 seconds
         new Thread(() -> {
             while (running) {
                 try {
@@ -72,17 +77,47 @@ public class TemperatureServiceImpl implements TemperatureService, BundleActivat
                     break;
                 }
 
-                float currentTemperature = getTemperature();
+                float currentTemperature = fetchSensorData();
 
-                // Create event with the new temperature
-                Map<String, Object> properties = new HashMap<>();
-                properties.put("temperature", currentTemperature);
-                Event temperatureEvent = new Event("com/example/temperature/update", properties);
+                if(currentTemperature != -999f){
+                    // Create event with the new temperature
+                    Map<String, Object> properties = new HashMap<>();
+                    properties.put("temperature", currentTemperature);
+                    Event temperatureEvent = new Event("com/example/temperature/update", properties);
 
-                // Publish the event using EventAdmin
-                eventAdmin.postEvent(temperatureEvent);
+                    // Publish the event using EventAdmin
+                    eventAdmin.postEvent(temperatureEvent);
+                }
             }
         }).start();
+    }
+
+    public float fetchSensorData() {
+        String esp32Url = "http://192.168.8.130/sensor-temperature";
+
+        try {
+            URL url = new URL(esp32Url);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == 200) {
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                    String response = in.readLine();
+                    if (response != null) {
+                        return Float.parseFloat(response.trim());
+                    }
+                }
+            } else {
+                System.out.println("Failed to fetch data. Response code: " + responseCode);
+            }
+            connection.disconnect();
+        } catch (IOException | NumberFormatException e) {
+            System.out.println("Error fetching sensor data: " + e.getMessage());
+        }
+        return -999f; // Return -999 as an indication of failure
     }
 
 }
