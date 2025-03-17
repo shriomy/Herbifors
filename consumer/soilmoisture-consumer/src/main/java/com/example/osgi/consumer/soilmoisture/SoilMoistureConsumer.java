@@ -45,11 +45,11 @@ public class SoilMoistureConsumer implements BundleActivator, EventHandler {
 
     @Override
     public void handleEvent(Event event) {
-        // Check if the event is the temperature update event
+        // Check if the event is the soil moisture update event
         if ("com/example/soilMoisture/update".equals(event.getTopic())) {
-            // Extract the temperature from the event
+            // Extract the soil moisture from the event
             float soilMoisture = (float) event.getProperty("soilMoisture");
-            // Call the method to consume the temperature data
+            // Call the method to consume the soil moisture data
             consumeSoilMoisture(soilMoisture);
 
             if (soilMoisture > 30.0) {
