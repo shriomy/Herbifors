@@ -55,7 +55,7 @@ public class SoilMoistureConsumer implements BundleActivator, EventHandler {
             // Call the method to consume the soil moisture data
             consumeSoilMoisture(soilMoisture);
 
-            if (soilMoisture > 30.0) {
+            if (soilMoisture > 15.0) {
                 System.out.println("Soil Moisture level within threshold.");
                 if(waterPumpOn){
                     System.out.println("Sending request to stop water pump...");
