@@ -3,6 +3,7 @@ package com.example.osgi.producer.sales;
 import java.io.Serializable;
 
 public class Order implements Serializable {
+    private int id;
     private String customer;
     private String item;
     private int quantity;
@@ -20,6 +21,7 @@ public class Order implements Serializable {
     }
 
     // Getters and Setters
+    public int getId() { return id; }
     public String getCustomer() {
         return customer;
     }

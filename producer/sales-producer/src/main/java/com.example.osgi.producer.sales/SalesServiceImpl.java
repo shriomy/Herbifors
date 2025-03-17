@@ -23,7 +23,7 @@ public class SalesServiceImpl implements SalesService, BundleActivator {
         // Initialize database connection
         String url = "jdbc:mysql://localhost:3306/salesdb";
         String user = "root";
-        String password = "bilz123";
+        String password = "root";
         connection = DriverManager.getConnection(url, user, password);
         System.out.println("✅ Database connection established successfully!");
 

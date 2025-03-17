@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.example.osgi.producer.sales</groupId>
-    <artifactId>sales-producer</artifactId>
+    <groupId>com.example.osgi.consumer.delivery</groupId>
+    <artifactId>delivery-consumer</artifactId>
     <version>1.0</version>
     <packaging>bundle</packaging>
 
@@ -19,8 +19,6 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
-        <mysql.connector.version>8.0.32</mysql.connector.version>
     </properties>
 
     <build>
@@ -34,20 +32,11 @@
                     <instructions>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Bundle-Activator>com.example.osgi.producer.sales.SalesServiceImpl</Bundle-Activator>
-                        <Export-Package>com.example.osgi.producer.sales</Export-Package>
-                        <Import-Package>
-                            org.osgi.framework,
-                            javax.sql,
-                            org.osgi.service.jdbc,
-                            org.osgi.service.event,
-                            com.mysql.cj.jdbc,  <!-- Properly import MySQL JDBC -->
-                            org.osgi.service.component.annotations,
-                            *
-                        </Import-Package>
-                        <Require-Capability>
-                            osgi.ee;filter:="(osgi.ee=JavaSE)"
-                        </Require-Capability>
+                        <!-- Import the temperature-producer package -->
+                        <Import-Package>com.example.osgi.producer.delivery, com.example.osgi.producer.sales, org.osgi.framework, org.osgi.service.event</Import-Package>
+                        <Bundle-Activator>com.example.osgi.consumer.delivery.DeliveryConsumer</Bundle-Activator>
+                        <Export-Package>com.example.osgi.consumer.delivery</Export-Package>
+
                     </instructions>
                 </configuration>
             </plugin>
@@ -67,22 +56,25 @@
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <version>6.0.0</version>
+            <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.example.osgi.producer.delivery</groupId>
+            <artifactId>delivery-producer</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.example.osgi.producer.sales</groupId>
+            <artifactId>sales-producer</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.service.event</artifactId>
             <version>1.4.0</version>
         </dependency>
-
-
-        <!-- MySQL JDBC Driver -->
-        <!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
-        <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>8.3.0</version>
-        </dependency>
-
     </dependencies>
+
 </project>
