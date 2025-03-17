@@ -10,12 +10,16 @@
     <packaging>pom</packaging>
     <modules>
         <module>consumer/temperature-consumer</module>
+        <module>producer/harvest-tracker</module>
+        <module>consumer/warehouse-inventory</module>
+        <module>consumer/finance-manager</module>
+        <module>producer/sales-producer</module>
         <module>producer/temperature-producer</module>
         <module>consumer/delivery-consumer</module>
         <module>producer/delivery-producer</module>
         <module>consumer/sales-consumer</module>
-        <module>producer/sales-producer</module>
-
+        <module>producer/soilmoisture-producer</module>
+        <module>consumer/soilmoisture-consumer</module>
     </modules>
 
     <properties>
@@ -79,6 +83,8 @@
             <artifactId>mysql-connector-j</artifactId>
             <version>8.3.0</version>
         </dependency>
+
+
 
 
         <!---->

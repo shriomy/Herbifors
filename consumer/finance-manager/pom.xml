@@ -3,17 +3,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.example.osgi.consumer.temperature</groupId>
-    <artifactId>temperature-consumer</artifactId>
-    <version>1.0</version>
-    <packaging>bundle</packaging>
-
     <parent>
         <groupId>com.example.osgi</groupId>
         <artifactId>Herbifors</artifactId>
         <version>1.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
+
+    <groupId>com.example.osgi.consumer.financeManager</groupId>
+    <artifactId>finance-manager</artifactId>
+    <version>1.0</version>
+    <packaging>bundle</packaging>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -33,10 +33,9 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <!-- Import the temperature-producer package -->
-                        <Import-Package>com.example.osgi.producer.temperature, org.osgi.framework, org.osgi.service.event</Import-Package>
-                        <Bundle-Activator>com.example.osgi.consumer.temperature.TemperatureConsumerService</Bundle-Activator>
-                        <Export-Package>com.example.osgi.consumer.temperature</Export-Package>
-
+                        <Import-Package>com.example.osgi.producer.harvestTracker, org.osgi.framework</Import-Package>
+                        <Bundle-Activator>com.example.osgi.consumer.financeManager.FinanceManager</Bundle-Activator>
+                        <Export-Package>com.example.osgi.consumer.financeManager</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -51,6 +50,13 @@
             <version>7.0.5</version>
         </dependency>
 
+        <!-- Apache Felix SCR (Declarative Services) -->
+        <!--        <dependency>-->
+        <!--            <groupId>org.apache.felix</groupId>-->
+        <!--            <artifactId>org.apache.felix.scr</artifactId>-->
+        <!--            <version>2.2.0</version>-->
+        <!--        </dependency>-->
+
         <!-- OSGi Core API -->
         <dependency>
             <groupId>org.osgi</groupId>
@@ -59,25 +65,19 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.example.osgi.producer.temperature</groupId>
-            <artifactId>temperature-producer</artifactId>
+            <groupId>com.example.osgi.producer.harvestTracker</groupId>
+            <artifactId>harvest-tracker</artifactId>
             <version>1.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.service.event</artifactId>
-            <version>1.4.0</version>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.utils</artifactId>
+            <version>1.2.0</version>
         </dependency>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <version>4.2.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.example.osgi.producer.temperature</groupId>
-            <artifactId>temperature-producer</artifactId>
+            <groupId>com.example.osgi.producer.sales</groupId>
+            <artifactId>sales-producer</artifactId>
             <version>1.0</version>
             <scope>compile</scope>
         </dependency>

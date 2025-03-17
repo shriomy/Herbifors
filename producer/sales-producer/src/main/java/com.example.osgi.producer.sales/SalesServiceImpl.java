@@ -39,12 +39,10 @@ public class SalesServiceImpl implements SalesService, BundleActivator {
     public void stop(BundleContext context) throws Exception {
         System.out.println("Sales Producer stopped.");
 
-        // Unregister the service
         if (registration != null) {
             registration.unregister();
         }
 
-        // Close database connection
         if (connection != null && !connection.isClosed()) {
             connection.close();
             System.out.println("❌ Database connection closed.");
@@ -92,13 +90,74 @@ public class SalesServiceImpl implements SalesService, BundleActivator {
         return orders;
     }
 
+
+    @Override
+    public void updateOrder(int orderId, Order order) {
+        String query = "UPDATE orders SET customer = ?, item = ?, qty = ?, manufactured_price = ?, selling_price = ?, location = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, order.getCustomer());
+            stmt.setString(2, order.getItem());
+            stmt.setInt(3, order.getQuantity());
+            stmt.setDouble(4, order.getManufacturedPrice());
+            stmt.setDouble(5, order.getSellingPrice());
+            stmt.setString(6, order.getLocation());
+            stmt.setInt(7, orderId);
+            stmt.executeUpdate();
+            System.out.println("✅ Order updated successfully: " + order);
+        } catch (SQLException e) {
+            System.out.println("❌ Error updating order: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void deleteOrder(int orderId) {
+        String query = "DELETE FROM orders WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, orderId);
+            stmt.executeUpdate();
+            System.out.println("✅ Order deleted successfully with ID: " + orderId);
+        } catch (SQLException e) {
+            System.out.println("❌ Error deleting order: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public double getTotalManufacturingCost() {
+        String query = "SELECT SUM(qty * manufactured_price) FROM orders";
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+        } catch (SQLException e) {
+            System.out.println("❌ Error calculating total manufacturing cost: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    @Override
+    public double getTotalSellingCost() {
+        String query = "SELECT SUM(qty * selling_price) FROM orders";
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+        } catch (SQLException e) {
+            System.out.println("❌ Error calculating total selling cost: " + e.getMessage());
+        }
+        return 0;
+    }
+
     private void displayServiceFunctions() {
         System.out.println("\n📌 Available SalesService Functions:");
         System.out.println("+----------------+-------------------------------------+");
         System.out.println("| Function Name  | Description                         |");
         System.out.println("+----------------+-------------------------------------+");
-        System.out.println("| addOrder      | Adds a new order to the database    |");
-        System.out.println("| getOrders     | Retrieves all orders from database  |");
+        System.out.println("| addOrder       | Adds a new order to the database    |");
+        System.out.println("| getOrders      | Retrieves all orders from database  |");
+        System.out.println("| updateOrder    | Updates an order by ID              |");
+        System.out.println("| deleteOrder    | Deletes an order by ID              |");
+        System.out.println("| getTotalManufacturingCost | Total manufacturing cost |");
+        System.out.println("| getTotalSellingCost       | Total selling cost       |");
         System.out.println("+----------------+-------------------------------------+\n");
     }
 }

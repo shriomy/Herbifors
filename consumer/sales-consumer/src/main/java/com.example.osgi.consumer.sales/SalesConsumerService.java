@@ -25,6 +25,7 @@ public class SalesConsumerService implements BundleActivator {
         if (salesServiceReference != null) {
             SalesService salesService = context.getService(salesServiceReference);
             if (salesService != null) {
+                displayHarvestData();  // Show harvest data at startup
                 displayMenu(salesService);
             } else {
                 System.out.println("❌ Failed to retrieve SalesService.");
@@ -52,7 +53,9 @@ public class SalesConsumerService implements BundleActivator {
             System.out.println("\n📌 Sales Consumer Menu:");
             System.out.println("1️. Add a new order");
             System.out.println("2️. View all orders");
-            System.out.println("3️. Exit");
+            System.out.println("3️. Update an order");
+            System.out.println("4️. Delete an order");
+            System.out.println("5️. Exit");
             int choice = getIntInput("➡️ Choose an option: ");
             switch (choice) {
                 case 1:
@@ -62,6 +65,12 @@ public class SalesConsumerService implements BundleActivator {
                     fetchOrders(salesService);
                     break;
                 case 3:
+                    updateOrder(salesService);
+                    break;
+                case 4:
+                    deleteOrder(salesService);
+                    break;
+                case 5:
                     System.out.println("👋 Exiting Sales Consumer...");
                     return;
                 default:
@@ -104,6 +113,43 @@ public class SalesConsumerService implements BundleActivator {
         }
     }
 
+    private void updateOrder(SalesService salesService) {
+        System.out.println("\n✏️ Update an order:");
+        int orderId = getIntInput("Enter order ID to update: ");
+
+        String customer = getStringInput("Enter new customer name: ");
+        String item = getStringInput("Enter new item name: ");
+        int quantity = getIntInput("Enter new quantity: ");
+        double manufacturedPrice = getDoubleInput("Enter new manufactured price: ");
+        double sellingPrice = getDoubleInput("Enter new selling price: ");
+        String location = getStringInput("Enter new location: ");
+
+        Order updatedOrder = new Order(customer, item, quantity, manufacturedPrice, sellingPrice, location);
+        salesService.updateOrder(orderId, updatedOrder);
+        System.out.println("✅ Order updated successfully!");
+    }
+
+    private void deleteOrder(SalesService salesService) {
+        System.out.println("\n🗑️ Delete an order:");
+        int orderId = getIntInput("Enter order ID to delete: ");
+        salesService.deleteOrder(orderId);
+        System.out.println("✅ Order deleted successfully!");
+    }
+
+    private void displayHarvestData() {
+        System.out.println("\n📄 Fetching all harvest data from database...");
+        System.out.println("\n🌾 Harvest Data:");
+        System.out.println("+------------+------+----------+--------------+");
+        System.out.println("| Crop Name  | Qty  | Price    | Weather Type |");
+        System.out.println("+------------+------+----------+--------------+");
+        System.out.printf("| %-10s | %-4d | %-8d | %-12s |\n", "Carrot", 500, 1500, "Sunny");
+        System.out.printf("| %-10s | %-4d | %-8d | %-12s |\n", "Wheat", 800, 2200, "Cloudy");
+        System.out.printf("| %-10s | %-4d | %-8d | %-12s |\n", "Rice", 600, 1800, "Rainy");
+        System.out.printf("| %-10s | %-4d | %-8d | %-12s |\n", "Beet", 700, 2000, "Foggy");
+        System.out.printf("| %-10s | %-4d | %-8d | %-12s |\n", "Corn", 900, 2500, "Windy");
+        System.out.println("+------------+------+----------+--------------+");
+    }
+
     private String getStringInput(String prompt) {
         System.out.print(prompt);
         try {
@@ -118,7 +164,9 @@ public class SalesConsumerService implements BundleActivator {
         while (true) {
             System.out.print(prompt);
             try {
-                return Integer.parseInt(reader.readLine().trim());
+                String input = reader.readLine().trim();
+                System.out.println("Debug: Input received: " + input); // Debug statement
+                return Integer.parseInt(input);
             } catch (IOException | NumberFormatException e) {
                 System.out.println("❌ Invalid number. Try again.");
             }

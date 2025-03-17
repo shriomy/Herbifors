@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.example.osgi.consumer.temperature</groupId>
-    <artifactId>temperature-consumer</artifactId>
+    <groupId>com.example.osgi.producer.soilmoisture</groupId>
+    <artifactId>soilmoisture-producer</artifactId>
     <version>1.0</version>
     <packaging>bundle</packaging>
 
@@ -15,12 +15,14 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
+
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <!-- Add the OSGi Bundle Plugin -->
     <build>
         <plugins>
             <plugin>
@@ -32,11 +34,9 @@
                     <instructions>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <!-- Import the temperature-producer package -->
-                        <Import-Package>com.example.osgi.producer.temperature, org.osgi.framework, org.osgi.service.event</Import-Package>
-                        <Bundle-Activator>com.example.osgi.consumer.temperature.TemperatureConsumerService</Bundle-Activator>
-                        <Export-Package>com.example.osgi.consumer.temperature</Export-Package>
-
+                        <Bundle-Activator>com.example.osgi.producer.soilmoisture.SoilMoistureServiceImpl</Bundle-Activator>
+                        <Export-Package>com.example.osgi.producer.soilmoisture,org.osgi.service.event</Export-Package>
+                        <Import-Package>org.osgi.framework, org.osgi.service.event</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -59,27 +59,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.example.osgi.producer.temperature</groupId>
-            <artifactId>temperature-producer</artifactId>
-            <version>1.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.service.event</artifactId>
             <version>1.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <version>4.2.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.example.osgi.producer.temperature</groupId>
-            <artifactId>temperature-producer</artifactId>
-            <version>1.0</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 
