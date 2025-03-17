@@ -10,6 +10,8 @@ AsyncWebServer server(80);
 
 //Pins
 #define FAN_PIN 18
+#define PUMP_PIN 19
+
 #define DHTPIN 4
 #define DHTTYPE DHT11
 
@@ -24,6 +26,9 @@ void setup() {
     Serial.begin(115200);
     pinMode(FAN_PIN, OUTPUT); // test fan ON
     pinMode(FAN_PIN, INPUT); // Fan OFF initially
+
+    pinMode(PUMP_PIN, OUTPUT); // test pump ON
+    pinMode(PUMP_PIN, INPUT); // Pump OFF initially
 
     dht.begin();
     WiFi.begin(ssid, password);
@@ -49,6 +54,18 @@ void setup() {
         request->send(200, "text/plain", "Fan stopped");
     });
 
+  // Start server
+    server.on("/start-pump", HTTP_GET, [](AsyncWebServerRequest *request) {
+        pinMode(PUMP_PIN, OUTPUT); // Turn fan ON
+        Serial.println("Pump turn ON");
+        request->send(200, "text/plain", "Pump started");
+    });
+
+    server.on("/stop-pump", HTTP_GET, [](AsyncWebServerRequest *request) {
+        pinMode(PUMP_PIN, INPUT); // Turn fan OFF
+        Serial.println("Pump turn OFF");
+        request->send(200, "text/plain", "Pump stopped");
+    });
     server.begin();
 }
 
