@@ -1,156 +1,197 @@
 package com.example.osgi.producer.harvestTracker;
 
-import com.example.osgi.producer.harvestTracker.HarvestTrackingService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.sql.*;
 import java.util.*;
 
 public class HarvestTrackingServiceImpl implements HarvestTrackingService, BundleActivator {
+
+    private ServiceRegistration<HarvestTrackingService> registration;
     private Connection connection;
-    private ServiceRegistration<?> registration;
 
     @Override
-    public void start(BundleContext context) {
-        try {
-            // Load MySQL JDBC driver
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/harvest_db?useSSL=false&serverTimezone=UTC",
-                    "root",
-                    "Snfp2001*"
-            );
-            registration = context.registerService(HarvestTrackingService.class, this, null);
-            System.out.println("✅ HarvestTrackingService started and connected to DB.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void start(BundleContext context) throws Exception {
+        System.out.println("Harvest Tracker Producer started.");
+
+        // Load MySQL driver explicitly
+        Class.forName("com.mysql.cj.jdbc.Driver");
+
+        // Initialize database connection
+        String url = "jdbc:mysql://localhost:3306/salesdb";
+        String user = "root";
+        String password = "bilz123";
+        connection = DriverManager.getConnection(url, user, password);
+        System.out.println("✅ Database connection established successfully!");
+
+        // Register the HarvestTrackingService as an OSGi service
+        registration = context.registerService(HarvestTrackingService.class, this, null);
+        System.out.println("✅ HarvestTrackingService registered successfully!");
+
+        // Display available service functions
+        displayServiceFunctions();
     }
 
     @Override
-    public void stop(BundleContext context) {
-        try {
-            if (connection != null) connection.close();
-            if (registration != null) registration.unregister();
-            System.out.println("🛑 HarvestTrackingService stopped and DB connection closed.");
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void stop(BundleContext context) throws Exception {
+        System.out.println("Harvest Tracker Producer stopped.");
+
+        if (registration != null) {
+            registration.unregister();
         }
+
+        closeConnection();
     }
 
     @Override
-    public void addCrop(String name, int quantity, double price, String weatherType, int cropID) {
-        String query = "INSERT INTO crops (crop_id, name, quantity, price, weather_type) VALUES (?, ?, ?, ?, ?)";
+    public void addCrop(int cropId, String name, int quantity, double price, String weatherType) {
+        String query = "INSERT INTO crops (crop_id, crop_name, crop_qty, crop_uprice, weather_type) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, cropID);
+            stmt.setInt(1, cropId);
             stmt.setString(2, name);
             stmt.setInt(3, quantity);
             stmt.setDouble(4, price);
             stmt.setString(5, weatherType);
             stmt.executeUpdate();
-            System.out.println("🌱 Crop added: " + name);
+            System.out.println("✅ Crop added successfully: " + name);
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("❌ Error adding crop: " + e.getMessage());
         }
     }
 
     @Override
-    public void updateCrop(int cropID, int quantity, double price, String weatherType) {
-        String query = "UPDATE crops SET quantity = ?, price = ?, weather_type = ? WHERE crop_id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, quantity);
-            stmt.setDouble(2, price);
-            stmt.setString(3, weatherType);
-            stmt.setInt(4, cropID);
-            stmt.executeUpdate();
-            System.out.println("🔄 Crop updated: ID " + cropID);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void deleteCrop(int cropID) {
-        String query = "DELETE FROM crops WHERE crop_id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, cropID);
-            stmt.executeUpdate();
-            System.out.println("❌ Crop deleted: ID " + cropID);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public Map<Integer, String> getCropDetails() {
-        Map<Integer, String> crops = new HashMap<>();
+    public Map<Integer, Crop> getCropDetails() {
+        Map<Integer, Crop> crops = new HashMap<>();
         String query = "SELECT * FROM crops";
-        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
-                int id = rs.getInt("crop_id");
-                String details = rs.getString("name") + ", " + rs.getInt("quantity") + "kg, $" + rs.getDouble("price") + ", " + rs.getString("weather_type");
-                crops.put(id, details);
+                Crop crop = new Crop(
+                        rs.getInt("crop_id"),
+                        rs.getString("crop_name"),
+                        rs.getInt("crop_qty"),
+                        rs.getDouble("crop_uprice"),
+                        rs.getString("weather_type")
+                );
+                crops.put(crop.getCropId(), crop);
             }
+            System.out.println("📄 Fetched " + crops.size() + " crops from the database.");
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("❌ Error fetching crops: " + e.getMessage());
         }
         return crops;
     }
 
     @Override
-    public Map<Integer, String> getSortedCrops(String sortBy, boolean ascending) {
-        Map<Integer, String> crops = new HashMap<>();
-        String order = ascending ? "ASC" : "DESC";
-        String query = "SELECT * FROM crops ORDER BY " + sortBy + " " + order;
-
-        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                int id = rs.getInt("crop_id");
-                String details = rs.getString("name") + ", " + rs.getInt("quantity") + "kg, $" + rs.getDouble("price");
-                crops.put(id, details);
-            }
+    public void updateCrop(int cropId, int quantity, double price, String weatherType) {
+        String query = "UPDATE crops SET crop_qty = ?, crop_uprice = ?, weather_type = ? WHERE crop_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, quantity);
+            stmt.setDouble(2, price);
+            stmt.setString(3, weatherType);
+            stmt.setInt(4, cropId);
+            stmt.executeUpdate();
+            System.out.println("✅ Crop updated successfully: " + cropId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("❌ Error updating crop: " + e.getMessage());
         }
+    }
+
+    @Override
+    public void deleteCrop(int cropId) {
+        String query = "DELETE FROM crops WHERE crop_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, cropId);
+            stmt.executeUpdate();
+            System.out.println("✅ Crop deleted successfully with ID: " + cropId);
+        } catch (SQLException e) {
+            System.out.println("❌ Error deleting crop: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Crop> getSortedCrops(String sortBy, boolean ascending) {
+        List<Crop> crops = new ArrayList<>(getCropDetails().values());
+        Comparator<Crop> comparator = switch (sortBy.toLowerCase()) {
+            case "name" -> Comparator.comparing(Crop::getName);
+            case "price" -> Comparator.comparing(Crop::getPrice);
+            case "quantity" -> Comparator.comparing(Crop::getQuantity);
+            default -> Comparator.comparing(Crop::getCropId);
+        };
+        crops.sort(ascending ? comparator : comparator.reversed());
         return crops;
     }
 
     @Override
     public List<String> recommendCrops(String currentWeather) {
-        List<String> recommendedCrops = new ArrayList<>();
-        String query = "SELECT name FROM crops WHERE weather_type = ?";
+        List<String> recommendations = new ArrayList<>();
+        String query = "SELECT crop_name FROM crops WHERE weather_type = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, currentWeather);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                recommendedCrops.add("✅ " + rs.getString("name") + " grows well in " + currentWeather);
+                recommendations.add(rs.getString("crop_name"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("❌ Error getting recommendations: " + e.getMessage());
         }
-        return recommendedCrops;
+        return recommendations;
     }
 
     @Override
     public void exportCropDataToCSV(String filePath) {
-        String query = "SELECT * FROM crops";
-        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query);
-             BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-
-            writer.write("Crop ID, Name, Quantity, Price, Weather Type\n");
-            while (rs.next()) {
-                writer.write(rs.getInt("crop_id") + "," + rs.getString("name") + ","
-                        + rs.getInt("quantity") + "," + rs.getDouble("price") + ","
-                        + rs.getString("weather_type") + "\n");
+        try (PrintWriter writer = new PrintWriter(new File(filePath))) {
+            writer.println("CropID,Name,Quantity,Price,WeatherType");
+            for (Crop crop : getCropDetails().values()) {
+                writer.printf("%d,%s,%d,%.2f,%s\n", crop.getCropId(), crop.getName(), crop.getQuantity(), crop.getPrice(), crop.getWeatherType());
             }
-            System.out.println("✅ Crop data exported to " + filePath);
-        } catch (IOException | SQLException e) {
-            e.printStackTrace();
+            System.out.println("✅ CSV exported successfully!");
+        } catch (FileNotFoundException e) {
+            System.out.println("❌ Error exporting CSV: " + e.getMessage());
         }
     }
+
+//    @Override
+//    public void displayCropData() {
+//        System.out.println("\n📌 Current Crop Inventory:");
+//        System.out.printf("%-8s %-15s %-10s %-10s %-15s%n", "ID", "Name", "Quantity", "Price", "Weather");
+//        System.out.println("-".repeat(60));
+//        getCropDetails().values().forEach(crop -> System.out.printf("%-8d %-15s %-10d %-10.2f %-15s%n", crop.getCropId(), crop.getName(), crop.getQuantity(), crop.getPrice(), crop.getWeatherType()));
+//    }
+
+    @Override
+    public void closeConnection() {
+        try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+                System.out.println("❌ Database connection closed.");
+            }
+        } catch (SQLException e) {
+            System.out.println("❌ Error closing connection: " + e.getMessage());
+        }
+    }
+
+    private void displayServiceFunctions() {
+        System.out.println("\n📌 Available HarvestTrackingService Functions:");
+        System.out.println("+---------------------------+-------------------------------------------+");
+        System.out.println("| Function Name             | Description                               |");
+        System.out.println("+---------------------------+-------------------------------------------+");
+        System.out.println("| addCrop                   | Adds a new crop to the database           |");
+        System.out.println("| getCropDetails            | Retrieves all crop details                |");
+        System.out.println("| updateCrop                | Updates an existing crop by ID            |");
+        System.out.println("| deleteCrop                | Deletes a crop by ID                      |");
+        System.out.println("| getSortedCrops            | Retrieves crops sorted by a given field   |");
+        System.out.println("| recommendCrops            | Recommends crops based on weather         |");
+        System.out.println("| exportCropDataToCSV       | Exports crop data to a CSV file           |");
+        System.out.println("| displayCropData           | Displays formatted crop inventory         |");
+        System.out.println("| getTotalCropValue         | Calculates total crop market value        |");
+        System.out.println("| closeConnection           | Closes the database connection            |");
+        System.out.println("+---------------------------+-------------------------------------------+\n");
+    }
+
 }
