@@ -23,15 +23,15 @@ public class HarvestTrackingServiceImpl implements HarvestTrackingService, Bundl
         Class.forName("com.mysql.cj.jdbc.Driver");
 
         // Initialize database connection
-        String url = "jdbc:mysql://localhost:3306/salesdb";
+        String url = "jdbc:mysql://localhost:3306/harvest_db";
         String user = "root";
-        String password = "bilz123";
+        String password = "Snfp2001*";
         connection = DriverManager.getConnection(url, user, password);
-        System.out.println("✅ Database connection established successfully!");
+        System.out.println(" Database connection established successfully!");
 
         // Register the HarvestTrackingService as an OSGi service
         registration = context.registerService(HarvestTrackingService.class, this, null);
-        System.out.println("✅ HarvestTrackingService registered successfully!");
+        System.out.println(" HarvestTrackingService registered successfully!");
 
         // Display available service functions
         displayServiceFunctions();
@@ -58,9 +58,9 @@ public class HarvestTrackingServiceImpl implements HarvestTrackingService, Bundl
             stmt.setDouble(4, price);
             stmt.setString(5, weatherType);
             stmt.executeUpdate();
-            System.out.println("✅ Crop added successfully: " + name);
+            System.out.println(" Crop added successfully: " + name);
         } catch (SQLException e) {
-            System.out.println("❌ Error adding crop: " + e.getMessage());
+            System.out.println(" Error adding crop: " + e.getMessage());
         }
     }
 
@@ -80,9 +80,9 @@ public class HarvestTrackingServiceImpl implements HarvestTrackingService, Bundl
                 );
                 crops.put(crop.getCropId(), crop);
             }
-            System.out.println("📄 Fetched " + crops.size() + " crops from the database.");
+            System.out.println(" Fetched " + crops.size() + " crops from the database.");
         } catch (SQLException e) {
-            System.out.println("❌ Error fetching crops: " + e.getMessage());
+            System.out.println(" Error fetching crops: " + e.getMessage());
         }
         return crops;
     }
@@ -96,9 +96,9 @@ public class HarvestTrackingServiceImpl implements HarvestTrackingService, Bundl
             stmt.setString(3, weatherType);
             stmt.setInt(4, cropId);
             stmt.executeUpdate();
-            System.out.println("✅ Crop updated successfully: " + cropId);
+            System.out.println(" Crop updated successfully: " + cropId);
         } catch (SQLException e) {
-            System.out.println("❌ Error updating crop: " + e.getMessage());
+            System.out.println(" Error updating crop: " + e.getMessage());
         }
     }
 
@@ -108,9 +108,9 @@ public class HarvestTrackingServiceImpl implements HarvestTrackingService, Bundl
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, cropId);
             stmt.executeUpdate();
-            System.out.println("✅ Crop deleted successfully with ID: " + cropId);
+            System.out.println(" Crop deleted successfully with ID: " + cropId);
         } catch (SQLException e) {
-            System.out.println("❌ Error deleting crop: " + e.getMessage());
+            System.out.println(" Error deleting crop: " + e.getMessage());
         }
     }
 
@@ -138,7 +138,7 @@ public class HarvestTrackingServiceImpl implements HarvestTrackingService, Bundl
                 recommendations.add(rs.getString("crop_name"));
             }
         } catch (SQLException e) {
-            System.out.println("❌ Error getting recommendations: " + e.getMessage());
+            System.out.println(" Error getting recommendations: " + e.getMessage());
         }
         return recommendations;
     }
@@ -150,34 +150,26 @@ public class HarvestTrackingServiceImpl implements HarvestTrackingService, Bundl
             for (Crop crop : getCropDetails().values()) {
                 writer.printf("%d,%s,%d,%.2f,%s\n", crop.getCropId(), crop.getName(), crop.getQuantity(), crop.getPrice(), crop.getWeatherType());
             }
-            System.out.println("✅ CSV exported successfully!");
+            System.out.println(" CSV exported successfully to " + filePath);
         } catch (FileNotFoundException e) {
-            System.out.println("❌ Error exporting CSV: " + e.getMessage());
+            System.out.println(" Error exporting CSV: " + e.getMessage());
         }
     }
-
-//    @Override
-//    public void displayCropData() {
-//        System.out.println("\n📌 Current Crop Inventory:");
-//        System.out.printf("%-8s %-15s %-10s %-10s %-15s%n", "ID", "Name", "Quantity", "Price", "Weather");
-//        System.out.println("-".repeat(60));
-//        getCropDetails().values().forEach(crop -> System.out.printf("%-8d %-15s %-10d %-10.2f %-15s%n", crop.getCropId(), crop.getName(), crop.getQuantity(), crop.getPrice(), crop.getWeatherType()));
-//    }
 
     @Override
     public void closeConnection() {
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
-                System.out.println("❌ Database connection closed.");
+                System.out.println(" Database connection closed.");
             }
         } catch (SQLException e) {
-            System.out.println("❌ Error closing connection: " + e.getMessage());
+            System.out.println(" Error closing connection: " + e.getMessage());
         }
     }
 
     private void displayServiceFunctions() {
-        System.out.println("\n📌 Available HarvestTrackingService Functions:");
+        System.out.println("\n Available HarvestTrackingService Functions:");
         System.out.println("+---------------------------+-------------------------------------------+");
         System.out.println("| Function Name             | Description                               |");
         System.out.println("+---------------------------+-------------------------------------------+");
