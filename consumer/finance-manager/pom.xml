@@ -33,7 +33,7 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <!-- Import the temperature-producer package -->
-                        <Import-Package>com.example.osgi.producer.harvestTracker, org.osgi.framework</Import-Package>
+                        <Import-Package>com.example.osgi.producer.sales, org.osgi.framework</Import-Package>
                         <Bundle-Activator>com.example.osgi.consumer.financeManager.FinanceManager</Bundle-Activator>
                         <Export-Package>com.example.osgi.consumer.financeManager</Export-Package>
                     </instructions>
