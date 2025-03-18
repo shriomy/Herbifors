@@ -7,6 +7,6 @@ public interface SalesService {
     List<Order> getOrders();
     void updateOrder(int orderId, Order order);
     void deleteOrder(int orderId);
-    double getTotalManufacturingCost();
-    double getTotalSellingCost();
+    double getTotalManufacturingExpenses();
+    double getRevenue();
 }
