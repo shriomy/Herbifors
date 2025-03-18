@@ -39,12 +39,11 @@ public class DeliveryConsumer implements BundleActivator {
 
         while (running) {
             System.out.println("\n1. View all deliveries");
-            System.out.println("2. View all sales orders");
-            System.out.println("3. Convert Sales Order to Delivery");
-            System.out.println("4. Update Delivery Status");
-            System.out.println("5. View Deliveries by Customer");
-            System.out.println("6. Delete a Delivery");
-            System.out.println("7. Exit");
+            System.out.println("2. Convert Sales Order to Delivery");
+            System.out.println("3. Update Delivery Status");
+            System.out.println("4. View Deliveries by Customer");
+            System.out.println("5. Delete a Delivery");
+            System.out.println("6. Exit");
             System.out.println(" ");
 
             Integer choice = getIntInput("Choose an option: ");
@@ -60,26 +59,22 @@ public class DeliveryConsumer implements BundleActivator {
                     break;
 
                 case 2:
-                    viewAllSalesOrders(salesService);
-                    break;
-
-                case 3:
                     convertSalesOrderToDelivery(salesService, deliveryService);
                     break;
 
-                case 4:
+                case 3:
                     updateDeliveryStatus(deliveryService);
                     break;
 
-                case 5:
+                case 4:
                     viewDeliveriesByCustomer(deliveryService);
                     break;
 
-                case 6:
+                case 5:
                     deleteDelivery(deliveryService);
                     break;
 
-                case 7:
+                case 6:
                     running = false;
                     break;
 
@@ -89,74 +84,67 @@ public class DeliveryConsumer implements BundleActivator {
             }
         }
     }
-
     private void viewAllDeliveries(DeliveryService deliveryService) {
         List<DeliveryOrder> deliveries = deliveryService.getDeliveries();
         if (deliveries.isEmpty()) {
-            System.out.println("No deliveries found.");
+            System.out.println("🚚 No deliveries found.");
         } else {
-            System.out.println("Deliveries:");
+            System.out.println("\n📦 All Deliveries:");
+            System.out.printf("%-5s | %-15s | %-30s | %-20s | %-12s | %-10s\n",
+                    "ID", "Customer", "Address", "Item", "Date", "Status");
+            System.out.println("-------------------------------------------------------------------------------------------------------");
+
             for (DeliveryOrder order : deliveries) {
-                System.out.println("ID: " + order.getId());
-                System.out.println("Customer: " + order.getCustomer());
-                System.out.println("Address: " + order.getAddress());
-                System.out.println("Item: " + order.getItem());
-                System.out.println("Date: " + order.getDeliveryDate());
-                System.out.println("Status: " + order.getStatus());
-                System.out.println("------------------------------------------------------------");
+                System.out.printf("%-5d | %-15s | %-30s | %-20s | %-12s | %-10s\n",
+                        order.getId(), order.getCustomer(), order.getAddress(),
+                        order.getItem(), order.getDeliveryDate(), order.getStatus());
             }
         }
     }
 
-    private void viewAllSalesOrders(SalesService salesService) {
-        List<Order> orders = salesService.getOrders();
-        if (orders.isEmpty()) {
-            System.out.println("No sales orders found.");
-        } else {
-            System.out.println("Sales Orders:");
-            for (Order order : orders) {
-                System.out.println("ID: " + order.getId());
-                System.out.println("Customer: " + order.getCustomer());
-                System.out.println("Item: " + order.getItem());
-                System.out.println("Quantity: " + order.getQuantity());
-                System.out.println("Location: " + order.getLocation());
-                System.out.println("Selling Price: " + order.getSellingPrice());
-                System.out.println("------------------------------------------------------------");
-            }
-        }
-    }
+
 
     private void convertSalesOrderToDelivery(SalesService salesService, DeliveryService deliveryService) {
         List<Order> salesOrders = salesService.getOrders();
         if (salesOrders.isEmpty()) {
             System.out.println("No sales orders available to convert.");
-        } else {
-            System.out.println("Select a sales order to convert into a delivery:");
-            for (int i = 0; i < salesOrders.size(); i++) {
-                System.out.println((i + 1) + ". " + salesOrders.get(i));
-            }
-
-            Integer orderIndex = getIntInput("Enter the number: ");
-            if (orderIndex == null || orderIndex < 1 || orderIndex > salesOrders.size()) {
-                System.out.println("Invalid selection.");
-                return;
-            }
-
-            Order selectedOrder = salesOrders.get(orderIndex - 1);
-            String deliveryDate = getStringInput("Enter delivery date (YYYY-MM-DD): ");
-
-            DeliveryOrder newDelivery = new DeliveryOrder(
-                    selectedOrder.getCustomer(),
-                    selectedOrder.getLocation(),
-                    selectedOrder.getItem(),
-                    deliveryDate,
-                    "Pending"
-            );
-
-            deliveryService.addDelivery(newDelivery);
-            System.out.println("✅ Delivery created successfully: " + newDelivery);
+            return;
         }
+
+        System.out.println("\n📋 Sales Orders:");
+        System.out.printf("%-4s %-15s %-10s %-5s %-15s %-10s\n",
+                "ID", "Customer", "Item", "Qty", "Selling Price", "Location");
+        System.out.println("--------------------------------------------------------------");
+
+        for (int i = 0; i < salesOrders.size(); i++) {
+            Order order = salesOrders.get(i);
+            System.out.printf("%-4d %-15s %-10s %-5d %-15.2f %-10s\n",
+                    (i + 1), order.getCustomer(), order.getItem(),
+                    order.getQuantity(), order.getSellingPrice(), order.getLocation());
+        }
+        System.out.println(" ");
+
+        Integer orderIndex = getIntInput("Enter the number of the order to convert: ");
+        if (orderIndex == null || orderIndex < 1 || orderIndex > salesOrders.size()) {
+            System.out.println("Invalid selection.");
+            return;
+        }
+
+        Order selectedOrder = salesOrders.get(orderIndex - 1);
+        String deliveryDate = getStringInput("Enter delivery date (YYYY-MM-DD): ");
+
+        DeliveryOrder newDelivery = new DeliveryOrder(
+                selectedOrder.getCustomer(),
+                selectedOrder.getLocation(),
+                selectedOrder.getItem(),
+                deliveryDate,
+                "Pending"
+        );
+
+        deliveryService.addDelivery(newDelivery);
+        System.out.println("✅ Delivery created successfully: " + newDelivery);
     }
+
 
     private void updateDeliveryStatus(DeliveryService deliveryService) {
         List<DeliveryOrder> allDeliveries = deliveryService.getDeliveries();
@@ -165,18 +153,27 @@ public class DeliveryConsumer implements BundleActivator {
             return;
         }
 
-        Integer deliveryId = getIntInput("Enter Delivery ID: ");
+        System.out.println("\n📦 Available Deliveries:");
+        System.out.printf("%-5s | %-15s | %-20s | %-12s\n", "ID", "Customer", "Item", "Status");
+        System.out.println("--------------------------------------------------------");
+        for (DeliveryOrder order : allDeliveries) {
+            System.out.printf("%-5d | %-15s | %-20s | %-12s\n",
+                    order.getId(), order.getCustomer(), order.getItem(), order.getStatus());
+        }
+        System.out.println(" ");
+
+        Integer deliveryId = getIntInput("Enter Delivery ID to update: ");
         if (deliveryId == null) {
             return;
         }
 
         boolean validId = allDeliveries.stream().anyMatch(order -> order.getId() == deliveryId);
         if (!validId) {
-            System.out.println("Invalid Delivery ID.");
+            System.out.println("❌ Invalid Delivery ID.");
             return;
         }
 
-        System.out.println("Select a new status:");
+        System.out.println("\n📌 Select a new status:");
         System.out.println("1. Pending");
         System.out.println("2. Dispatched");
         System.out.println("3. Delivered");
@@ -193,7 +190,7 @@ public class DeliveryConsumer implements BundleActivator {
             case 3 -> "Delivered";
             case 4 -> "Canceled";
             default -> {
-                System.out.println("Invalid choice. Keeping current status.");
+                System.out.println("❌ Invalid choice. Keeping current status.");
                 yield null;
             }
         };
@@ -204,24 +201,27 @@ public class DeliveryConsumer implements BundleActivator {
         }
     }
 
+
     private void viewDeliveriesByCustomer(DeliveryService deliveryService) {
-        String customerName = getStringInput("Enter customer name: ");
+        String customerName = getStringInput("🔍 Enter customer name: ");
 
         List<DeliveryOrder> customerDeliveries = deliveryService.getDeliveriesByCustomer(customerName);
         if (customerDeliveries.isEmpty()) {
-            System.out.println("No deliveries found for customer: " + customerName);
-        } else {
-            System.out.println("Deliveries for " + customerName + ":");
-            for (DeliveryOrder order : customerDeliveries) {
-                System.out.println("ID: " + order.getId());
-                System.out.println("Address: " + order.getAddress());
-                System.out.println("Item: " + order.getItem());
-                System.out.println("Date: " + order.getDeliveryDate());
-                System.out.println("Status: " + order.getStatus());
-                System.out.println("------------------------------------------------------------");
-            }
+            System.out.println("❌ No deliveries found for customer: " + customerName);
+            return;
+        }
+
+        System.out.println("\n📦 Deliveries for " + customerName + ":");
+        System.out.printf("%-5s | %-30s | %-20s | %-12s | %-10s\n",
+                "ID", "Address", "Item", "Date", "Status");
+        System.out.println("-------------------------------------------------------------------------------------");
+
+        for (DeliveryOrder order : customerDeliveries) {
+            System.out.printf("%-5d | %-30s | %-20s | %-12s | %-10s\n",
+                    order.getId(), order.getAddress(), order.getItem(), order.getDeliveryDate(), order.getStatus());
         }
     }
+
 
     private void deleteDelivery(DeliveryService deliveryService) {
         Integer deleteId = getIntInput("Enter Delivery ID to delete: ");
