@@ -8,13 +8,20 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.List;
-import java.util.Scanner;
 
 public class DeliveryConsumer implements BundleActivator {
+    private BufferedReader reader;
+
     @Override
     public void start(BundleContext context) throws Exception {
         System.out.println("Delivery Client: Looking for Delivery and Sales Services...");
+
+        // Initialize reader
+        reader = new BufferedReader(new InputStreamReader(System.in));
 
         // Get service references
         ServiceReference<DeliveryService> deliveryRef = context.getServiceReference(DeliveryService.class);
@@ -28,7 +35,6 @@ public class DeliveryConsumer implements BundleActivator {
             return;
         }
 
-        Scanner scanner = new Scanner(System.in);
         boolean running = true;
 
         while (running) {
@@ -40,10 +46,14 @@ public class DeliveryConsumer implements BundleActivator {
             System.out.println("6. Delete a Delivery");
             System.out.println("7. Exit");
             System.out.println(" ");
-            System.out.print("Choose an option: ");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+
+            Integer choice = getIntInput("Choose an option: ");
+            if (choice == null) {
+                System.out.println("⚠️ Input error detected. Returning to menu...");
+                continue;
+            }
             System.out.println(" ");
+
             switch (choice) {
                 case 1:
                     viewAllDeliveries(deliveryService);
@@ -54,19 +64,19 @@ public class DeliveryConsumer implements BundleActivator {
                     break;
 
                 case 3:
-                    convertSalesOrderToDelivery(scanner, salesService, deliveryService);
+                    convertSalesOrderToDelivery(salesService, deliveryService);
                     break;
 
                 case 4:
-                    updateDeliveryStatus(scanner, deliveryService);
+                    updateDeliveryStatus(deliveryService);
                     break;
 
                 case 5:
-                    viewDeliveriesByCustomer(scanner, deliveryService);
+                    viewDeliveriesByCustomer(deliveryService);
                     break;
 
                 case 6:
-                    deleteDelivery(scanner, deliveryService);
+                    deleteDelivery(deliveryService);
                     break;
 
                 case 7:
@@ -116,7 +126,7 @@ public class DeliveryConsumer implements BundleActivator {
         }
     }
 
-    private void convertSalesOrderToDelivery(Scanner scanner, SalesService salesService, DeliveryService deliveryService) {
+    private void convertSalesOrderToDelivery(SalesService salesService, DeliveryService deliveryService) {
         List<Order> salesOrders = salesService.getOrders();
         if (salesOrders.isEmpty()) {
             System.out.println("No sales orders available to convert.");
@@ -125,88 +135,78 @@ public class DeliveryConsumer implements BundleActivator {
             for (int i = 0; i < salesOrders.size(); i++) {
                 System.out.println((i + 1) + ". " + salesOrders.get(i));
             }
-            System.out.print("Enter the number: ");
-            int orderIndex = scanner.nextInt();
-            scanner.nextLine();
 
-            if (orderIndex < 1 || orderIndex > salesOrders.size()) {
+            Integer orderIndex = getIntInput("Enter the number: ");
+            if (orderIndex == null || orderIndex < 1 || orderIndex > salesOrders.size()) {
                 System.out.println("Invalid selection.");
-            } else {
-                Order selectedOrder = salesOrders.get(orderIndex - 1);
-
-                System.out.print("Enter delivery date (YYYY-MM-DD): ");
-                String deliveryDate = scanner.nextLine();
-
-                DeliveryOrder newDelivery = new DeliveryOrder(
-                        selectedOrder.getCustomer(),
-                        selectedOrder.getLocation(),
-                        selectedOrder.getItem(),
-                        deliveryDate,
-                        "Pending"
-                );
-
-                deliveryService.addDelivery(newDelivery);
-                System.out.println("✅ Delivery created successfully: " + newDelivery);
-            }
-        }
-    }
-
-    private void updateDeliveryStatus(Scanner scanner, DeliveryService deliveryService) {
-        List<DeliveryOrder> allDeliveries = deliveryService.getDeliveries();
-        if (allDeliveries.isEmpty()) {
-            System.out.println("No deliveries found.");
-        } else {
-            System.out.println("Select a delivery to update status:");
-            for (DeliveryOrder order : allDeliveries) {
-                System.out.println("ID: " + order.getId() + " | Customer: " + order.getCustomer() + " | Item: " + order.getItem() + " | Status: " + order.getStatus());
-            }
-
-            System.out.print("Enter Delivery ID: ");
-            int deliveryId = scanner.nextInt();
-            scanner.nextLine();
-
-            boolean validId = allDeliveries.stream().anyMatch(order -> order.getId() == deliveryId);
-            if (!validId) {
-                System.out.println("Invalid Delivery ID.");
                 return;
             }
 
-            System.out.println("Select a new status:");
-            System.out.println("1. Pending");
-            System.out.println("2. Dispatched");
-            System.out.println("3. Delivered");
-            System.out.println("4. Canceled");
-            System.out.print("Enter your choice: ");
-            int statusChoice = scanner.nextInt();
-            scanner.nextLine();
+            Order selectedOrder = salesOrders.get(orderIndex - 1);
+            String deliveryDate = getStringInput("Enter delivery date (YYYY-MM-DD): ");
 
-            String newStatus = "";
-            switch (statusChoice) {
-                case 1:
-                    newStatus = "Pending";
-                    break;
-                case 2:
-                    newStatus = "Dispatched";
-                    break;
-                case 3:
-                    newStatus = "Delivered";
-                    break;
-                case 4:
-                    newStatus = "Canceled";
-                    break;
-                default:
-                    System.out.println("Invalid choice. Keeping current status.");
-                    return;
+            DeliveryOrder newDelivery = new DeliveryOrder(
+                    selectedOrder.getCustomer(),
+                    selectedOrder.getLocation(),
+                    selectedOrder.getItem(),
+                    deliveryDate,
+                    "Pending"
+            );
+
+            deliveryService.addDelivery(newDelivery);
+            System.out.println("✅ Delivery created successfully: " + newDelivery);
+        }
+    }
+
+    private void updateDeliveryStatus(DeliveryService deliveryService) {
+        List<DeliveryOrder> allDeliveries = deliveryService.getDeliveries();
+        if (allDeliveries.isEmpty()) {
+            System.out.println("No deliveries found.");
+            return;
+        }
+
+        Integer deliveryId = getIntInput("Enter Delivery ID: ");
+        if (deliveryId == null) {
+            return;
+        }
+
+        boolean validId = allDeliveries.stream().anyMatch(order -> order.getId() == deliveryId);
+        if (!validId) {
+            System.out.println("Invalid Delivery ID.");
+            return;
+        }
+
+        System.out.println("Select a new status:");
+        System.out.println("1. Pending");
+        System.out.println("2. Dispatched");
+        System.out.println("3. Delivered");
+        System.out.println("4. Canceled");
+
+        Integer statusChoice = getIntInput("Enter your choice: ");
+        if (statusChoice == null) {
+            return;
+        }
+
+        String newStatus = switch (statusChoice) {
+            case 1 -> "Pending";
+            case 2 -> "Dispatched";
+            case 3 -> "Delivered";
+            case 4 -> "Canceled";
+            default -> {
+                System.out.println("Invalid choice. Keeping current status.");
+                yield null;
             }
+        };
 
+        if (newStatus != null) {
             deliveryService.updateDeliveryStatus(deliveryId, newStatus);
             System.out.println("✅ Delivery status updated successfully!");
         }
     }
 
-    private void viewDeliveriesByCustomer(Scanner scanner, DeliveryService deliveryService) {
-        System.out.print("Enter customer name: ");
-        String customerName = scanner.nextLine();
+    private void viewDeliveriesByCustomer(DeliveryService deliveryService) {
+        String customerName = getStringInput("Enter customer name: ");
+
         List<DeliveryOrder> customerDeliveries = deliveryService.getDeliveriesByCustomer(customerName);
         if (customerDeliveries.isEmpty()) {
             System.out.println("No deliveries found for customer: " + customerName);
@@ -223,17 +223,45 @@ public class DeliveryConsumer implements BundleActivator {
         }
     }
 
-    private void deleteDelivery(Scanner scanner, DeliveryService deliveryService) {
-        System.out.print("Enter Delivery ID to delete: ");
-        int deleteId = scanner.nextInt();
-        scanner.nextLine();
+    private void deleteDelivery(DeliveryService deliveryService) {
+        Integer deleteId = getIntInput("Enter Delivery ID to delete: ");
+        if (deleteId == null) {
+            return;
+        }
         deliveryService.deleteDelivery(deleteId);
         System.out.println("✅ Delivery deleted successfully!");
-        System.out.println(" ");
+    }
+
+    private String getStringInput(String prompt) {
+        System.out.print(prompt);
+        try {
+            String input = reader.readLine();
+            return (input == null || input.isEmpty()) ? "N/A" : input.trim();
+        } catch (IOException e) {
+            System.out.println("⚠️ Error reading input: " + e.getMessage());
+            return "N/A";
+        }
+    }
+
+    private Integer getIntInput(String prompt) {
+        while (true) {
+            try {
+                System.out.print(prompt);
+                String input = reader.readLine();
+                if (input == null) {
+                    System.out.println("⚠️ Input error detected.");
+                    return null;
+                }
+                return Integer.parseInt(input.trim());
+            } catch (NumberFormatException | IOException e) {
+                System.out.println("❌ Please enter a valid number.");
+            }
+        }
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
         System.out.println("Delivery Client: Stopping...");
+        reader = null; // Don't close System.in, just clear reference
     }
 }
