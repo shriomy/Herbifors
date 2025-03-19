@@ -55,19 +55,23 @@ public class SalesConsumerService implements BundleActivator {
     @Override
     public void stop(BundleContext context) {
         System.out.println("📦 Sales Consumer stopped.");
-        if (salesServiceReference != null) {
-            context.ungetService(salesServiceReference);
-        }
         if (harvestServiceReference != null) {
             context.ungetService(harvestServiceReference);
         }
-        try {
-            if (reader != null) {
-                reader.close();
-            }
-        } catch (IOException e) {
-            System.out.println("❌ Error closing reader: " + e.getMessage());
-        }
+        reader = null;  // Don't close System.in, just clear reference
+//        if (salesServiceReference != null) {
+//            context.ungetService(salesServiceReference);
+//        }
+//        if (harvestServiceReference != null) {
+//            context.ungetService(harvestServiceReference);
+//        }
+//        try {
+//            if (reader != null) {
+//                reader.close();
+//            }
+//        } catch (IOException e) {
+//            System.out.println("❌ Error closing reader: " + e.getMessage());
+//        }
     }
 
     private void displayMenu(SalesService salesService) {
@@ -95,13 +99,6 @@ public class SalesConsumerService implements BundleActivator {
                     break;
                 case 5:
                     System.out.println("👋 Exiting Sales Consumer...");
-                    try {
-                        if (reader != null) {
-                            reader.close();
-                        }
-                    } catch (IOException e) {
-                        System.out.println("❌ Error closing reader: " + e.getMessage());
-                    }
                     return;
                 default:
                     System.out.println("❌ Invalid option. Please try again.");
