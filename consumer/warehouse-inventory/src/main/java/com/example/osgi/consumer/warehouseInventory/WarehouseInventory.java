@@ -66,7 +66,7 @@ public class WarehouseInventory implements BundleActivator {
                     System.out.println(" Exiting Warehouse Inventory Consumer...");
                     return;
                 }
-                default -> System.out.println("❌ Invalid option. Please try again.");
+                default -> System.out.println(" Invalid option. Please try again.");
             }
         }
     }
