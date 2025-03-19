@@ -8,6 +8,9 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
@@ -45,22 +48,22 @@ public class SoilMoistureConsumer implements BundleActivator, EventHandler {
 
     @Override
     public void handleEvent(Event event) {
-        // Check if the event is the temperature update event
+        // Check if the event is the soil moisture update event
         if ("com/example/soilMoisture/update".equals(event.getTopic())) {
-            // Extract the temperature from the event
+            // Extract the soil moisture from the event
             float soilMoisture = (float) event.getProperty("soilMoisture");
-            // Call the method to consume the temperature data
+            // Call the method to consume the soil moisture data
             consumeSoilMoisture(soilMoisture);
 
-            if (soilMoisture > 30.0) {
+            if (soilMoisture > 15.0) {
                 System.out.println("Soil Moisture level within threshold.");
-                if(!waterPumpOn){
+                if(waterPumpOn){
                     System.out.println("Sending request to stop water pump...");
                     sendWaterPumpControlRequest(false);
                 }
             } else {
                 System.out.println("Soil Moisture level lower than threshold.");
-                if(waterPumpOn){
+                if(!waterPumpOn){
                     System.out.println("Sending request to turn on water pump......");
                     sendWaterPumpControlRequest(true);
                 }
@@ -92,43 +95,42 @@ public class SoilMoistureConsumer implements BundleActivator, EventHandler {
 
 
     //simulated method
-    public void sendWaterPumpControlRequest(boolean turnOn) {
-        // Simulated ESP32 URL (not used in fake mode)
-        String esp32Url = "http://192.168.8.130/" + (turnOn ? "start-pump" : "stop-pump");
-
-        // Simulating a successful request
-        System.out.println("Sending water pump control request to " + esp32Url);
-        System.out.println("Water pump control request sent successfully.");
-
-        // Update the fan state as if the request was successful
-        waterPumpOn = turnOn;
-    }
-
-
+//    public void sendWaterPumpControlRequest(boolean turnOn) {
+//        // Simulated ESP32 URL (not used in fake mode)
+//        String esp32Url = "http://192.168.8.130/" + (turnOn ? "start-pump" : "stop-pump");
+//
+//        // Simulating a successful request
+//        System.out.println("Sending water pump control request to " + esp32Url);
+//        System.out.println("Water pump control request sent successfully.");
+//
+//        // Update the fan state as if the request was successful
+//        waterPumpOn = turnOn;
+//    }
 
 
 
     //working method
-//    public void sendFanControlRequest(boolean turnOn) {
-//        String esp32Url = "http://192.168.8.130/" + (turnOn ? "start-fan" : "stop-fan"); // Change IP
-//
-//        try {
-//            URL url = new URL(esp32Url);
-//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//            connection.setRequestMethod("GET");
-//            connection.setConnectTimeout(5000);
-//            connection.setReadTimeout(5000);
-//            int responseCode = connection.getResponseCode();
-//
-//            if (responseCode == 200) {
-//                System.out.println("Fan control request sent successfully.");
-//                fanOn = turnOn;
-//            } else {
-//                System.out.println("Failed to send fan control request. Response code: " + responseCode);
-//            }
-//            connection.disconnect();
-//        } catch (IOException e) {
-//            System.out.println("Error sending fan control request: " + e.getMessage());
-//        }
-//    }
+    public void sendWaterPumpControlRequest(boolean turnOn) {
+        //esp32 http endpoint (with ip address)
+        String esp32Url = "http://192.168.8.130/" + (turnOn ? "start-pump" : "stop-pump");
+
+        try {
+            URL url = new URL(esp32Url);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode == 200) {
+                System.out.println("Water Pump control request sent successfully.");
+                waterPumpOn = turnOn;
+            } else {
+                System.out.println("Failed to send Water Pump control request. Response code: " + responseCode);
+            }
+            connection.disconnect();
+        } catch (IOException e) {
+            System.out.println("Error sending Water Pump control request: " + e.getMessage());
+        }
+    }
 }

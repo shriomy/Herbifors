@@ -39,8 +39,8 @@ public class FinanceManager implements BundleActivator {
 
     private void calculateFinancialSummary() {
         if (salesService != null) {
-            double totalManufacturingCost = salesService.getTotalManufacturingCost();
-            double totalSellingCost = salesService.getTotalSellingCost();
+            double totalManufacturingCost = salesService.getTotalManufacturingExpenses();
+            double totalSellingCost = salesService.getRevenue();
             double roi = totalSellingCost - totalManufacturingCost;
             double totalSalesRevenue = totalSellingCost; // Total revenue is the total selling cost
 
