@@ -33,7 +33,7 @@ public class TemperatureServiceImpl implements TemperatureService, BundleActivat
         if (eventAdminRef != null) {
             eventAdmin = context.getService(eventAdminRef);
             System.out.println("EventAdmin service retrieved.");
-            simulateTemperatureUpdates();
+            temperatureUpdateThread();
         } else {
             System.out.println("EventAdmin service not found.");
         }
@@ -63,12 +63,12 @@ public class TemperatureServiceImpl implements TemperatureService, BundleActivat
     }
 
     // fetch temperature updates and publish events
-    private void simulateTemperatureUpdates() {
-        // Fetch new temperature every 5 seconds
+    private void temperatureUpdateThread() {
+        // request  temperature every 2 seconds
         new Thread(() -> {
             while (running) {
                 try {
-                    Thread.sleep(5000); // Simulate delay between updates
+                    Thread.sleep(5000); //delay between updates
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
