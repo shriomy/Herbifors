@@ -40,7 +40,7 @@ public class FinanceManager implements BundleActivator {
     private void calculateFinancialSummary() {
         if (salesService != null) {
             double totalManufacturingCost = salesService.getTotalManufacturingExpenses();
-            double totalSellingCost = salesService.getRevenue();
+            double totalSellingCost = salesService.getTotalSales();
             double roi = totalSellingCost - totalManufacturingCost;
             double totalSalesRevenue = totalSellingCost; // Total revenue is the total selling cost
 
@@ -49,7 +49,7 @@ public class FinanceManager implements BundleActivator {
             System.out.println("| Metric                   | Amount ($) |");
             System.out.println("+--------------------------+------------+");
             System.out.printf("| Total Manufacturing Cost  | %.2f      |\n", totalManufacturingCost);
-            System.out.printf("| Total Selling Cost        | %.2f      |\n", totalSellingCost);
+            System.out.printf("| Total Sales               | %.2f      |\n", totalSellingCost);
             System.out.printf("| ROI (Profit/Loss)         | %.2f      |\n", roi);
             System.out.printf("| Total Sales Revenue       | %.2f      |\n", totalSalesRevenue);
             System.out.println("+--------------------------+------------+\n");
