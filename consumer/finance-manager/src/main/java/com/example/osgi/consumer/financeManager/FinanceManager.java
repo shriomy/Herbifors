@@ -1,16 +1,19 @@
 package com.example.osgi.consumer.financeManager;
 
-import com.example.osgi.producer.harvestTracker.HarvestTrackingService;
 import com.example.osgi.producer.sales.SalesService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import java.util.Map;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.logging.Logger;
 
 public class FinanceManager implements BundleActivator {
 
     private ServiceReference<SalesService> salesServiceRef;
-    private SalesService salesService;
+    private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    private static final Logger logger = Logger.getLogger(FinanceManager.class.getName());
 
     @Override
     public void start(BundleContext context) throws Exception{
@@ -19,11 +22,11 @@ public class FinanceManager implements BundleActivator {
         // Look up the SalesService
         salesServiceRef = context.getServiceReference(SalesService.class);
         if (salesServiceRef != null) {
-            salesService = context.getService(salesServiceRef);
+            SalesService salesService = context.getService(salesServiceRef);
             System.out.println(" Connected to SalesService.");
 
             // Calculate and display financial details
-            calculateFinancialSummary();
+            calculateFinancialSummary(salesService);
         } else {
             System.out.println(" SalesService not found.");
         }
@@ -37,7 +40,7 @@ public class FinanceManager implements BundleActivator {
         }
     }
 
-    private void calculateFinancialSummary() {
+    private void calculateFinancialSummary(SalesService salesService) {
         if (salesService != null) {
             double totalManufacturingCost = salesService.getTotalManufacturingExpenses();
             double totalSellingCost = salesService.getRevenue();
@@ -55,14 +58,14 @@ public class FinanceManager implements BundleActivator {
             System.out.println("+--------------------------+------------+\n");
 
             if (roi > 0) {
-                System.out.println(" Business is profitable!");
+                logger.info("Business is profitable!");
             } else if (roi < 0) {
-                System.out.println(" Business is running at a loss.");
+                logger.warning("Business is running at a loss.");
             } else {
-                System.out.println(" Break-even point reached.");
+                logger.info("Break-even point reached.");
             }
         } else {
-            System.out.println(" Cannot calculate financial details. SalesService is unavailable.");
+            logger.severe("Cannot calculate financial details. SalesService is unavailable.");
         }
     }
 }

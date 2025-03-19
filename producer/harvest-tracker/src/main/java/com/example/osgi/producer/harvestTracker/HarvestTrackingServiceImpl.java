@@ -17,7 +17,6 @@ public class HarvestTrackingServiceImpl implements HarvestTrackingService, Bundl
 
     @Override
     public void start(BundleContext context) throws Exception {
-        System.out.println(" Harvest Tracker Producer started.");
 
         // Load MySQL driver explicitly
         Class.forName("com.mysql.cj.jdbc.Driver");
@@ -58,9 +57,8 @@ public class HarvestTrackingServiceImpl implements HarvestTrackingService, Bundl
             stmt.setDouble(4, price);
             stmt.setString(5, weatherType);
             stmt.executeUpdate();
-            System.out.println(" Crop added successfully: " + name);
         } catch (SQLException e) {
-            System.out.println(" Error adding crop: " + e.getMessage());
+            System.out.println("Error adding crop: " + e.getMessage());
         }
     }
 
