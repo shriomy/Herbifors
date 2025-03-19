@@ -64,6 +64,13 @@ public class WarehouseInventory implements BundleActivator {
                 case 7 -> exportCropData(harvestService);
                 case 8 -> {
                     System.out.println("👋 Exiting Warehouse Inventory Consumer...");
+                    try {
+                        if (reader != null) {
+                            reader.close();
+                        }
+                    } catch (IOException e) {
+                        System.out.println("❌ Error closing reader: " + e.getMessage());
+                    }
                     return;
                 }
                 default -> System.out.println("❌ Invalid option. Please try again.");
