@@ -11,8 +11,13 @@
     <modules>
         <module>producer/temperature-producer</module>
         <module>consumer/temperature-consumer</module>
+        <module>producer/harvest-tracker</module>
+        <module>consumer/warehouse-inventory</module>
+        <module>consumer/finance-manager</module>
         <module>producer/sales-producer</module>
         <module>consumer/sales-consumer</module>
+        <module>consumer/delivery-consumer</module>
+        <module>producer/delivery-producer</module>
         <module>producer/soilmoisture-producer</module>
         <module>consumer/soilmoisture-consumer</module>
     </modules>

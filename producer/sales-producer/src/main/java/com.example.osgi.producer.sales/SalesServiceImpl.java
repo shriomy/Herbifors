@@ -23,7 +23,7 @@ public class SalesServiceImpl implements SalesService, BundleActivator {
         // Initialize database connection
         String url = "jdbc:mysql://localhost:3306/salesdb";
         String user = "root";
-        String password = "bilz123";
+        String password = "root";
         connection = DriverManager.getConnection(url, user, password);
         System.out.println("✅ Database connection established successfully!");
 
@@ -122,7 +122,7 @@ public class SalesServiceImpl implements SalesService, BundleActivator {
     }
 
     @Override
-    public double getTotalManufacturingCost() {
+    public double getTotalManufacturingExpenses() {
         String query = "SELECT SUM(qty * manufactured_price) FROM orders";
         try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             if (rs.next()) {
@@ -135,7 +135,7 @@ public class SalesServiceImpl implements SalesService, BundleActivator {
     }
 
     @Override
-    public double getTotalSellingCost() {
+    public double getRevenue() {
         String query = "SELECT SUM(qty * selling_price) FROM orders";
         try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             if (rs.next()) {
@@ -149,15 +149,15 @@ public class SalesServiceImpl implements SalesService, BundleActivator {
 
     private void displayServiceFunctions() {
         System.out.println("\n📌 Available SalesService Functions:");
-        System.out.println("+----------------+-------------------------------------+");
-        System.out.println("| Function Name  | Description                         |");
-        System.out.println("+----------------+-------------------------------------+");
-        System.out.println("| addOrder       | Adds a new order to the database    |");
-        System.out.println("| getOrders      | Retrieves all orders from database  |");
-        System.out.println("| updateOrder    | Updates an order by ID              |");
-        System.out.println("| deleteOrder    | Deletes an order by ID              |");
-        System.out.println("| getTotalManufacturingCost | Total manufacturing cost |");
-        System.out.println("| getTotalSellingCost       | Total selling cost       |");
-        System.out.println("+----------------+-------------------------------------+\n");
+        System.out.println("+-------------------------------+-------------------------------------+");
+        System.out.println("| Function Name                 | Description                         |");
+        System.out.println("+-------------------------------+-------------------------------------+");
+        System.out.println("| addOrder                      | Adds a new order to the database    |");
+        System.out.println("| getOrders                     | Retrieves all orders from database  |");
+        System.out.println("| updateOrder                   | Updates an order by ID              |");
+        System.out.println("| deleteOrder                   | Deletes an order by ID              |");
+        System.out.println("| getTotalManufacturingExpenses | Total manufacturing expenses        |");
+        System.out.println("| getRevenue                    | Generated revenue                   |");
+        System.out.println("+-------------------------------+-------------------------------------+\n");
     }
 }
