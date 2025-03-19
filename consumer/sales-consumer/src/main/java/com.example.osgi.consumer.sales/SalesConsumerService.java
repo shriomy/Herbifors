@@ -18,13 +18,14 @@ public class SalesConsumerService implements BundleActivator {
 
     private ServiceReference<SalesService> salesServiceReference;
     private ServiceReference<HarvestTrackingService> harvestServiceReference;
-    private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    private BufferedReader reader;
 
     @Override
     public void start(BundleContext context) {
         System.out.println("📦 Sales Consumer started.");
+        reader = new BufferedReader(new InputStreamReader(System.in));
 
-        // Fetch and display available crops
+        // Fetch HarvestTrackingService and display crop details
         harvestServiceReference = context.getServiceReference(HarvestTrackingService.class);
         if (harvestServiceReference != null) {
             HarvestTrackingService harvestService = context.getService(harvestServiceReference);
@@ -57,8 +58,13 @@ public class SalesConsumerService implements BundleActivator {
         if (salesServiceReference != null) {
             context.ungetService(salesServiceReference);
         }
+        if (harvestServiceReference != null) {
+            context.ungetService(harvestServiceReference);
+        }
         try {
-            reader.close();
+            if (reader != null) {
+                reader.close();
+            }
         } catch (IOException e) {
             System.out.println("❌ Error closing reader: " + e.getMessage());
         }
@@ -72,7 +78,8 @@ public class SalesConsumerService implements BundleActivator {
             System.out.println("3️. Update an order");
             System.out.println("4️. Delete an order");
             System.out.println("5️. Exit");
-            int choice = getIntInput("➡️ Choose an option: ", 1, 5);
+
+            int choice = getIntInput("➡️ Choose an option: ");
             switch (choice) {
                 case 1:
                     addOrderThroughConsumer(salesService);
@@ -88,6 +95,13 @@ public class SalesConsumerService implements BundleActivator {
                     break;
                 case 5:
                     System.out.println("👋 Exiting Sales Consumer...");
+                    try {
+                        if (reader != null) {
+                            reader.close();
+                        }
+                    } catch (IOException e) {
+                        System.out.println("❌ Error closing reader: " + e.getMessage());
+                    }
                     return;
                 default:
                     System.out.println("❌ Invalid option. Please try again.");
@@ -99,7 +113,7 @@ public class SalesConsumerService implements BundleActivator {
         System.out.println("\n📊 Available Crops from Harvest Tracker:");
         Map<Integer, Crop> crops = harvestService.getCropDetails();
 
-        if (crops.isEmpty()) {
+        if (crops == null || crops.isEmpty()) {
             System.out.println("⚠️ No crops found in the database.");
             return;
         }
@@ -113,17 +127,43 @@ public class SalesConsumerService implements BundleActivator {
                     crop.getPrice(), crop.getWeatherType());
         }
         System.out.println("+--------+------------------+----------+------------+------------------+");
-        System.out.println("Total crops available: " + crops.size());
+    }
+
+    private void fetchOrders(SalesService salesService) {
+        System.out.println("\n📄 Fetching all orders from database...");
+        try {
+            List<Order> orders = salesService.getOrders();
+            if (orders == null || orders.isEmpty()) {
+                System.out.println("⚠️ No orders found.");
+                return;
+            }
+
+            System.out.println("+--------+------------+--------+------+-----------------+--------------+------------+");
+            System.out.println("| OrderID| Customer   | Item   | Qty  | Manuf. Price    | Selling Price | Location  |");
+            System.out.println("+--------+------------+--------+------+-----------------+--------------+------------+");
+
+            for (Order order : orders) {
+                if (order != null) {
+                    System.out.printf("| %-6d | %-10s | %-6s | %-4d | %-15.2f | %-12.2f | %-10s |\n",
+                            order.getId(), order.getCustomer(), order.getItem(), order.getQuantity(),
+                            order.getManufacturedPrice(), order.getSellingPrice(), order.getLocation());
+                } else {
+                    System.out.println("⚠️ Skipping a null order entry.");
+                }
+            }
+            System.out.println("+--------+------------+--------+------+-----------------+--------------+------------+");
+        } catch (Exception e) {
+            System.out.println("❌ Error fetching orders: " + e.getMessage());
+        }
     }
 
     private void addOrderThroughConsumer(SalesService salesService) {
         System.out.println("\n📝 Enter order details:");
-
         String customer = getStringInput("Enter customer name: ");
         String item = getStringInput("Enter item name: ");
-        int quantity = getIntInput("Enter quantity: ", 1, Integer.MAX_VALUE);
-        double manufacturedPrice = getDoubleInput("Enter manufactured price: ", 0.01, Double.MAX_VALUE);
-        double sellingPrice = getDoubleInput("Enter selling price: ", 0.01, Double.MAX_VALUE);
+        int quantity = getIntInput("Enter quantity: ");
+        double manufacturedPrice = getDoubleInput("Enter manufactured price: ");
+        double sellingPrice = getDoubleInput("Enter selling price: ");
         String location = getStringInput("Enter location: ");
 
         Order order = new Order(customer, item, quantity, manufacturedPrice, sellingPrice, location);
@@ -131,36 +171,14 @@ public class SalesConsumerService implements BundleActivator {
         System.out.println("✅ Order added successfully!");
     }
 
-    private void fetchOrders(SalesService salesService) {
-        System.out.println("\n📄 Fetching all orders from database...");
-        List<Order> orders = salesService.getOrders();
-
-        if (orders.isEmpty()) {
-            System.out.println("⚠️ No orders found.");
-            return;
-        }
-
-        System.out.println("+--------+------------+--------+------+-----------------+--------------+------------+");
-        System.out.println("| OrderID| Customer   | Item   | Qty  | Manuf. Price    | Selling Price | Location  |");
-        System.out.println("+--------+------------+--------+------+-----------------+--------------+------------+");
-        for (Order order : orders) {
-            System.out.printf("| %-6d | %-10s | %-6s | %-4d | %-15.2f | %-12.2f | %-10s |\n",
-                    order.getId(), order.getCustomer(), order.getItem(), order.getQuantity(),
-                    order.getManufacturedPrice(), order.getSellingPrice(), order.getLocation());
-        }
-        System.out.println("+--------+------------+--------+------+-----------------+--------------+------------+");
-    }
-
-
     private void updateOrder(SalesService salesService) {
         System.out.println("\n✏️ Update an order:");
-        int orderId = getIntInput("Enter order ID to update: ", 1, Integer.MAX_VALUE);
-
+        int orderId = getIntInput("Enter order ID to update: ");
         String customer = getStringInput("Enter new customer name: ");
         String item = getStringInput("Enter new item name: ");
-        int quantity = getIntInput("Enter new quantity: ", 1, Integer.MAX_VALUE);
-        double manufacturedPrice = getDoubleInput("Enter new manufactured price: ", 0.01, Double.MAX_VALUE);
-        double sellingPrice = getDoubleInput("Enter new selling price: ", 0.01, Double.MAX_VALUE);
+        int quantity = getIntInput("Enter new quantity: ");
+        double manufacturedPrice = getDoubleInput("Enter new manufactured price: ");
+        double sellingPrice = getDoubleInput("Enter new selling price: ");
         String location = getStringInput("Enter new location: ");
 
         Order updatedOrder = new Order(customer, item, quantity, manufacturedPrice, sellingPrice, location);
@@ -170,58 +188,57 @@ public class SalesConsumerService implements BundleActivator {
 
     private void deleteOrder(SalesService salesService) {
         System.out.println("\n🗑️ Delete an order:");
-        int orderId = getIntInput("Enter order ID to delete: ", 1, Integer.MAX_VALUE);
-        System.out.print("Are you sure you want to delete this order? (yes/no): ");
-        String confirmation = getStringInput("").toLowerCase();
-        if (confirmation.equals("yes")) {
-            salesService.deleteOrder(orderId);
-            System.out.println("✅ Order deleted successfully!");
-        } else {
-            System.out.println("❌ Order deletion cancelled.");
-        }
+        int orderId = getIntInput("Enter order ID to delete: ");
+        salesService.deleteOrder(orderId);
+        System.out.println("✅ Order deleted successfully!");
     }
 
     private String getStringInput(String prompt) {
-        String input;
-        do {
+        System.out.print(prompt);
+        try {
+            return reader.readLine().trim();
+        } catch (IOException e) {
+            System.out.println("❌ Error reading input. Try again.");
+            return getStringInput(prompt);
+        }
+    }
+
+    private int getIntInput(String prompt) {
+        while (true) {
             System.out.print(prompt);
             try {
-                input = reader.readLine().trim();
-                if (!input.isEmpty()) {
-                    return input;
+                String input = reader.readLine();
+                if (input == null) {
+                    System.out.println("\n❌ Input stream closed. Exiting...");
+                    System.exit(1);
                 }
+                return Integer.parseInt(input.trim());
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Invalid number. Please enter a valid number.");
             } catch (IOException e) {
-                System.out.println("❌ Error reading input. Try again.");
-            }
-            System.out.println("❌ Input cannot be empty. Try again.");
-        } while (true);
-    }
-
-    private int getIntInput(String prompt, int min, int max) {
-        while (true) {
-            try {
-                System.out.print(prompt);
-                int value = Integer.parseInt(reader.readLine().trim());
-                if (value >= min && value <= max) {
-                    return value;
-                }
-            } catch (Exception e) {
-                System.out.println("❌ Invalid number. Try again.");
+                System.out.println("❌ Error reading input. Exiting...");
+                System.exit(1);
             }
         }
     }
 
-    private double getDoubleInput(String prompt, double min, double max) {
+    private double getDoubleInput(String prompt) {
         while (true) {
+            System.out.print(prompt);
             try {
-                System.out.print(prompt);
-                double value = Double.parseDouble(reader.readLine().trim());
-                if (value >= min && value <= max) {
-                    return value;
+                String input = reader.readLine();
+                if (input == null) {
+                    System.out.println("\n❌ Input stream closed. Exiting...");
+                    System.exit(1);
                 }
-            } catch (Exception e) {
-                System.out.println("❌ Invalid number. Try again.");
+                return Double.parseDouble(input.trim());
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Invalid number. Please enter a valid number.");
+            } catch (IOException e) {
+                System.out.println("❌ Error reading input. Exiting...");
+                System.exit(1);
             }
         }
     }
+
 }
