@@ -17,7 +17,6 @@ public class HarvestTrackingServiceImpl implements HarvestTrackingService, Bundl
 
     @Override
     public void start(BundleContext context) throws Exception {
-        System.out.println("Harvest Tracker Producer started.");
 
         // Load MySQL driver explicitly
         Class.forName("com.mysql.cj.jdbc.Driver");
@@ -31,7 +30,7 @@ public class HarvestTrackingServiceImpl implements HarvestTrackingService, Bundl
 
         // Register the HarvestTrackingService as an OSGi service
         registration = context.registerService(HarvestTrackingService.class, this, null);
-        System.out.println(" HarvestTrackingService registered successfully!");
+        System.out.println(" Harvest Tracking Service registered successfully!");
 
         // Display available service functions
         displayServiceFunctions();
@@ -39,7 +38,7 @@ public class HarvestTrackingServiceImpl implements HarvestTrackingService, Bundl
 
     @Override
     public void stop(BundleContext context) throws Exception {
-        System.out.println("Harvest Tracker Producer stopped.");
+        System.out.println(" Harvest Tracker Producer stopped.");
 
         if (registration != null) {
             registration.unregister();
@@ -58,9 +57,8 @@ public class HarvestTrackingServiceImpl implements HarvestTrackingService, Bundl
             stmt.setDouble(4, price);
             stmt.setString(5, weatherType);
             stmt.executeUpdate();
-            System.out.println(" Crop added successfully: " + name);
         } catch (SQLException e) {
-            System.out.println(" Error adding crop: " + e.getMessage());
+            System.out.println("Error adding crop: " + e.getMessage());
         }
     }
 
@@ -180,9 +178,9 @@ public class HarvestTrackingServiceImpl implements HarvestTrackingService, Bundl
         System.out.println("| getSortedCrops            | Retrieves crops sorted by a given field   |");
         System.out.println("| recommendCrops            | Recommends crops based on weather         |");
         System.out.println("| exportCropDataToCSV       | Exports crop data to a CSV file           |");
-        System.out.println("| displayCropData           | Displays formatted crop inventory         |");
-        System.out.println("| getTotalCropValue         | Calculates total crop market value        |");
-        System.out.println("| closeConnection           | Closes the database connection            |");
+        //System.out.println("| displayCropData           | Displays formatted crop inventory         |");
+        //System.out.println("| getTotalCropValue         | Calculates total crop market value        |");
+        //System.out.println("| closeConnection           | Closes the database connection            |");
         System.out.println("+---------------------------+-------------------------------------------+\n");
     }
 

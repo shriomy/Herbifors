@@ -15,7 +15,7 @@ public class SalesServiceImpl implements SalesService, BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
-        System.out.println("Sales Producer started.");
+        System.out.println("📦 Sales Producer started.");
 
         // Load MySQL driver explicitly
         Class.forName("com.mysql.cj.jdbc.Driver");
@@ -23,7 +23,7 @@ public class SalesServiceImpl implements SalesService, BundleActivator {
         // Initialize database connection
         String url = "jdbc:mysql://localhost:3306/salesdb";
         String user = "root";
-        String password = "root";
+        String password = "bilz123";
         connection = DriverManager.getConnection(url, user, password);
         System.out.println("✅ Database connection established successfully!");
 
@@ -37,7 +37,7 @@ public class SalesServiceImpl implements SalesService, BundleActivator {
 
     @Override
     public void stop(BundleContext context) throws Exception {
-        System.out.println("Sales Producer stopped.");
+        System.out.println("📦 Sales Producer stopped.");
 
         if (registration != null) {
             registration.unregister();
@@ -135,7 +135,7 @@ public class SalesServiceImpl implements SalesService, BundleActivator {
     }
 
     @Override
-    public double getRevenue() {
+    public double getTotalSales() {
         String query = "SELECT SUM(qty * selling_price) FROM orders";
         try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             if (rs.next()) {

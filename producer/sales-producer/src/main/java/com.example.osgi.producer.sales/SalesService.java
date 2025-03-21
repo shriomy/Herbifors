@@ -8,5 +8,5 @@ public interface SalesService {
     void updateOrder(int orderId, Order order);
     void deleteOrder(int orderId);
     double getTotalManufacturingExpenses();
-    double getRevenue();
+    double getTotalSales();
 }

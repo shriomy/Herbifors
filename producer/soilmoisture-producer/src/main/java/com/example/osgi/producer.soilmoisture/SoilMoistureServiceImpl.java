@@ -32,7 +32,7 @@ public class SoilMoistureServiceImpl implements BundleActivator, SoilMoistureSer
         if (eventAdminRef != null) {
             eventAdmin = context.getService(eventAdminRef);
             System.out.println("EventAdmin service retrieved.");
-            simulateSoilMoistureUpdates();
+            soilMoistureUpdateThread();
         } else {
             System.out.println("EventAdmin service not found.");
         }
@@ -61,13 +61,13 @@ public class SoilMoistureServiceImpl implements BundleActivator, SoilMoistureSer
         return 20.0F + random.nextFloat() * (40.0F - 20.0F);
     }
 
-    // simulate soil moisture updates and publish events
-    private void simulateSoilMoistureUpdates() {
-        // Simulate a new SoilMoisture level every 5 seconds
+    //  soil moisture updates and publish events
+    private void soilMoistureUpdateThread() {
+        // Request  SoilMoisture level every 2 seconds
         new Thread(() -> {
             while (running) {
                 try {
-                    Thread.sleep(2000); // Simulate delay between updates
+                    Thread.sleep(2000); // delay between updates
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
